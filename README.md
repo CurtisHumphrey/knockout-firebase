@@ -12,4 +12,4 @@ Knockout tools for using Firebase as its DB, inspired by [FireBind by tyrsius](h
  6. Sync can be read-once or continue reading
 
 #License
-KOX_Morf is Copyright © 2014 Curtis M. Humphrey and is licensed under the terms of the MIT License.
+Copyright © 2015 Curtis M. Humphrey and is licensed under the terms of the MIT License.
