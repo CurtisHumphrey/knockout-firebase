@@ -11,7 +11,7 @@ define (require) ->
          if model_obj[key] is undefined
             model_obj[key] = ko.observable init ? null
          
-         model_obj[key].extend
+         model_obj[key] = model_obj[key].extend
             fireValue: options
 
       return model_obj

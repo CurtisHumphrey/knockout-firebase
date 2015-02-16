@@ -12,7 +12,7 @@
         if (model_obj[key] === void 0) {
           model_obj[key] = ko.observable(init != null ? init : null);
         }
-        model_obj[key].extend({
+        model_obj[key] = model_obj[key].extend({
           fireValue: options
         });
       }
