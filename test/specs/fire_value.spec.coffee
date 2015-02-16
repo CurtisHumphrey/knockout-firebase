@@ -1,8 +1,11 @@
 define (require) ->
   ko           = require 'knockout'
   require 'fire_value'
+  _ = require 'lodash'
 
   window.ko = ko
+  MockFirebase = require('mockfirebase').MockFirebase
+
 
   describe 'Fire Value', ->
 
@@ -10,15 +13,143 @@ define (require) ->
 
     describe 'Exports', ->
       
-      it 'Should add a knockout extender "fireValue"', ->
-        expect ko.extenders.fireValue 
-          .toBeDefined()
+      it 'Should add a knockout extender "fireValue" function', ->
+        expect _.isFunction ko.extenders.fireValue 
+          .toBeTruthy()
 
-      it 'Should add a knockout function "fireObservable"', ->
-        expect ko.fireObservable 
-          .toBeDefined()
+      it 'Should add a knockout function "fireObservable" function', ->
+        expect _.isFunction ko.fireObservable 
+          .toBeTruthy()
+
+      it 'Should add a Change_Fire_Ref function to the extended observable', ->
+        target = ko.fireObservable false, {}
+
+        expect _.isFunction target.Change_Fire_Ref 
+          .toBeTruthy()
+
+      it 'Should add a Get_Fire_Ref function to the extended observable', ->
+        target = ko.fireObservable false, {}
+
+        expect _.isFunction target.Get_Fire_Ref 
+          .toBeTruthy()
+      return    
+
+    describe 'defaults with no fire_ref', ->
+      target = null
+      beforeEach ->
+        target = ko.fireObservable false, {}
+
+      it 'Should have a value of null', ->
+        expect(target()).toBeNull()
+
+      it 'Should have a Fire_Ref of false', ->
+        expect(target.Get_Fire_Ref()).toEqual false
+
+      it 'Should accept writes', ->
+        target true
+
+        expect(target()).toBeTruthy()
+
+      it 'Should protect firebase against undefined be replacing with null', ->
+        target undefined
+
+        expect(target()).toBeNull()
 
       return
-      
 
-    
+    describe 'Working with a fire_ref', ->
+      target = null
+      fire_ref = null
+
+      beforeEach ->
+        fire_ref = new MockFirebase('testing://')
+        fire_ref.autoFlush()
+
+        fire_ref.set
+          key: "test"
+
+      describe 'Only Reading Once', ->
+        beforeEach ->
+          target = ko.fireObservable false, 
+            read_only: true
+            read_once: true
+            fire_ref: fire_ref.child 'key'
+
+        it 'Should load the value "test" from the firebase', ->
+          expect(target()).toEqual "test"
+
+        it 'Should NOT load the next value "next" from the firebase', ->
+          fire_ref.set
+            key: "next"
+
+
+          expect(target()).toEqual "test"
+
+        it 'Should NOT save back to firebase', ->
+          target "next"
+
+          expect(fire_ref.child('key').getData()).toEqual "test"
+          expect(target()).toEqual "next"
+      
+      describe 'Only Reading but always syncing', ->
+        beforeEach ->
+          target = ko.fireObservable false, 
+            read_only: true
+            fire_ref: fire_ref.child 'key'
+
+          
+        it 'Should load the value "test" from the firebase', ->
+          expect(target()).toEqual "test"
+
+        it 'Should load the next value "next" from the firebase', ->
+          fire_ref.set
+            key: "next"
+
+          expect(target()).toEqual "next"
+
+        it 'Should NOT save back to firebase', ->
+          target "next"
+
+          expect(fire_ref.child('key').getData()).toEqual "test"
+          expect(target()).toEqual "next"
+      
+      describe 'Reading Once with writing', ->
+        beforeEach ->
+          target = ko.fireObservable false, 
+            read_once: true
+            fire_ref: fire_ref.child 'key'
+
+        it 'Should load the value "test" from the firebase', ->
+          expect(target()).toEqual "test"
+
+        it 'Should NOT load the next value "next" from the firebase', ->
+          fire_ref.set
+            key: "next"
+
+          expect(target()).toEqual "test"
+
+        it 'Should save back to firebase', ->
+          target "next"
+
+          expect(fire_ref.child('key').getData()).toEqual "next"
+          expect(target()).toEqual "next"
+        
+      describe 'Reading and Writing', ->
+        beforeEach ->
+          target = ko.fireObservable false, 
+            fire_ref: fire_ref.child 'key'
+
+        it 'Should load the value "test" from the firebase', ->
+          expect(target()).toEqual "test"
+
+        it 'Should load the next value "next" from the firebase', ->
+          fire_ref.set
+            key: "next"
+
+          expect(target()).toEqual "next"
+
+        it 'Should save back to firebase', ->
+          target "next"
+
+          expect(fire_ref.child('key').getData()).toEqual "next"
+          expect(target()).toEqual "next"

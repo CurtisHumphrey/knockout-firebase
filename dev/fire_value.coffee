@@ -1,71 +1,72 @@
 define (require) ->
    ko = require 'knockout'
 
-   ko.extenders.fireValue = (target, options) ->
-      read_only = options.read_only ? false
-      read_once = options.read_once ? false
+   Fire_Off = (target, On_Value_Change) ->
+      target.fire_sync_on = false
+      if target.fire_ref and target.fire_sync_on
+         target.fire_ref.off "value", On_Value_Change
+
+      return
+
+   Fire_Sync = (target, On_Value_Change, read_once) ->
+      Fire_Off target, On_Value_Change
+
+      fire_fn = if read_once then 'once' else 'on'
+      target.fire_ref[fire_fn] "value", On_Value_Change
 
       target.fire_sync_on = !read_once
 
-      On_Value_Change = (snapshot) ->
-         target snapshot.val()
+      return
 
-      target.Fire_Off = () ->
-         return if not target.fire_sync_on
-         target.fire_sync_on = false
-         target.fire_ref.off "value", On_Value_Change
+   Change_Fire_Ref = (fire_ref, target, On_Value_Change, read_once) ->
+      if fire_ref
+         target.fire_ref = fire_ref
+         Fire_Sync target, On_Value_Change, read_once
+      else
+         Fire_Off target, On_Value_Change
+         target.fire_ref = false
+         target null
 
-         return
+      return
 
-      target.Fire_Sync = () ->
-         target.Fire_Off()
+   Fire_Write = (target, value, read_only, read_once) ->
+      #firebase undefined protection
+      value = null if value is undefined
+      if not read_only and target.fire_ref
+         target.fire_ref.set value
+         
+         target value if read_once #else sync will take care of it  
+      else
+         target value
 
-         fire_fn = if read_once then 'on' else 'once'
-         target.fire_ref[fire_fn] "value", On_Value_Change
+      #TODO handle error
+      return value
 
-         target.fire_sync_on = !read_once
+   ko.extenders.fireValue = (target, options) ->
+      read_only = options.read_only ? false
+      read_once = options.read_once ? false
+      #options.fire_ref will be use at the end
 
-         return
+      target.fire_sync_on = false
 
-      target.Change_Ref = (fire_ref) ->
-         target.Fire_Off()
-
-         if fire_ref
-            target.fire_ref = fire_ref
-            target.Fire_Sync()
-         else
-            target.fire_ref = false
-            target null
-
-         return
-
-      # setup sync
-      target.Change_Ref options.fire_ref
-
-      if read_only
-         #writing does not sync the value back to firebase
-         return target
+      On_Value_Change = (snapshot) -> target snapshot.val()
 
       new_target = ko.pureComputed
          read: target
-         write: (value) ->
-            #firebase undefined protection
-            value = null if value is undefined
-            if target.fire_ref
-               target.fire_ref.set value
-            else
-               target value
+         write: (value) -> Fire_Write target, value, read_only, read_once
 
-            #TODO handle error
-            return value
-
-      new_target.Change_Ref = (fire_ref) -> 
-         target.Change_Ref fire_ref
+      new_target.Change_Fire_Ref = (fire_ref) -> 
+         Change_Fire_Ref fire_ref, target, On_Value_Change, read_once
       
+      new_target.Get_Fire_Ref = () -> target.fire_ref
+
       old_dispose = new_target.dispose
       new_target.dispose = () ->
          target.Fire_Off()
          old_dispose()
+
+      # setup sync
+      new_target.Change_Fire_Ref options.fire_ref
 
       return new_target
 
