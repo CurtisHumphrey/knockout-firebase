@@ -22,7 +22,6 @@
       } else {
         Fire_Off(target, On_Value_Change);
         target.fire_ref = false;
-        target(null);
       }
     };
     Fire_Write = function(target, value, read_only, read_once) {
@@ -44,6 +43,9 @@
       read_only = (_ref = options.read_only) != null ? _ref : false;
       read_once = (_ref1 = options.read_once) != null ? _ref1 : false;
       target.fire_sync_on = false;
+      if (target() === void 0) {
+        target(null);
+      }
       On_Value_Change = function(snapshot) {
         return target(snapshot.val());
       };

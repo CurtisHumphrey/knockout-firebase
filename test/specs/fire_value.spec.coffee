@@ -37,10 +37,10 @@ define (require) ->
     describe 'defaults with no fire_ref', ->
       target = null
       beforeEach ->
-        target = ko.fireObservable false, {}
+        target = ko.fireObservable "start", {}
 
-      it 'Should have a value of null', ->
-        expect(target()).toBeNull()
+      it 'Should have the initial value', ->
+        expect(target()).toEqual "start"
 
       it 'Should have a Fire_Ref of false', ->
         expect(target.Get_Fire_Ref()).toEqual false
@@ -54,6 +54,12 @@ define (require) ->
         target undefined
 
         expect(target()).toBeNull()
+
+        target1 = ko.observable()
+        target1.extend
+          fireValue: {}
+
+        expect(target1()).toBeNull()
 
       return
 

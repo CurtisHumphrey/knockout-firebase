@@ -30,10 +30,10 @@
         var target;
         target = null;
         beforeEach(function() {
-          return target = ko.fireObservable(false, {});
+          return target = ko.fireObservable("start", {});
         });
-        it('Should have a value of null', function() {
-          return expect(target()).toBeNull();
+        it('Should have the initial value', function() {
+          return expect(target()).toEqual("start");
         });
         it('Should have a Fire_Ref of false', function() {
           return expect(target.Get_Fire_Ref()).toEqual(false);
@@ -43,8 +43,14 @@
           return expect(target()).toBeTruthy();
         });
         it('Should protect firebase against undefined be replacing with null', function() {
+          var target1;
           target(void 0);
-          return expect(target()).toBeNull();
+          expect(target()).toBeNull();
+          target1 = ko.observable();
+          target1.extend({
+            fireValue: {}
+          });
+          return expect(target1()).toBeNull();
         });
       });
       return describe('Working with a fire_ref', function() {

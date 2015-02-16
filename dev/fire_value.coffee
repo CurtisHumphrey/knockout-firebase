@@ -25,7 +25,6 @@ define (require) ->
       else
          Fire_Off target, On_Value_Change
          target.fire_ref = false
-         target null
 
       return
 
@@ -48,6 +47,9 @@ define (require) ->
       #options.fire_ref will be use at the end
 
       target.fire_sync_on = false
+
+      if target() is undefined
+         target null
 
       On_Value_Change = (snapshot) -> target snapshot.val()
 
