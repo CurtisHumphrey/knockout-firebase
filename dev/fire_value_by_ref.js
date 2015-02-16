@@ -15,7 +15,7 @@
       ref_obs_id.subscribe(function(id) {
         var ref;
         if (id == null) {
-          target.Change_Ref(false);
+          target.Change_Fire_Ref(false);
           return;
         }
         ref = fire_ref.child(id);

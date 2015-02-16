@@ -14,7 +14,7 @@ define (require) ->
 
       ref_obs_id.subscribe (id) ->
          unless id?
-            target.Change_Ref false
+            target.Change_Fire_Ref false
             return
 
          ref = fire_ref.child(id)
