@@ -125,7 +125,7 @@
             return expect(target()).toEqual("next");
           });
         });
-        return describe('Reading and Writing', function() {
+        describe('Reading and Writing', function() {
           beforeEach(function() {
             return target = ko.fireObservable(false, {
               fire_ref: fire_ref.child('key')
@@ -144,6 +144,35 @@
             target("next");
             expect(fire_ref.child('key').getData()).toEqual("next");
             return expect(target()).toEqual("next");
+          });
+        });
+        return describe('Handling non-happy paths', function() {
+          beforeEach(function() {
+            fire_ref.set({
+              key: null
+            });
+            return target = ko.fireObservable(false, {
+              fire_ref: fire_ref.child('key')
+            });
+          });
+          it('Should be able to handle if the location does not exists - returns null', function() {
+            return expect(target()).toBeNull();
+          });
+          it('Should be able to go from null to value from firebase', function() {
+            fire_ref.set({
+              key: "next"
+            });
+            return expect(target()).toEqual("next");
+          });
+          it('Should be able to go from null to value from target', function() {
+            target("next");
+            expect(fire_ref.child('key').getData()).toEqual("next");
+            return expect(target()).toEqual("next");
+          });
+          return it('Should be able to go from value to null from target', function() {
+            target(null);
+            expect(fire_ref.child('key').getData()).toBeNull();
+            return expect(target()).toBeNull();
           });
         });
       });

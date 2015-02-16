@@ -153,3 +153,32 @@ define (require) ->
 
           expect(fire_ref.child('key').getData()).toEqual "next"
           expect(target()).toEqual "next"
+
+      describe 'Handling non-happy paths', ->
+        beforeEach ->
+          fire_ref.set
+            key: null
+
+          target = ko.fireObservable false, 
+            fire_ref: fire_ref.child 'key'
+
+        it 'Should be able to handle if the location does not exists - returns null', ->
+          expect(target()).toBeNull()
+
+        it 'Should be able to go from null to value from firebase', ->
+          fire_ref.set
+            key: "next"
+
+          expect(target()).toEqual "next"
+
+        it 'Should be able to go from null to value from target', ->
+          target "next"
+
+          expect(fire_ref.child('key').getData()).toEqual "next"
+          expect(target()).toEqual "next"
+
+        it 'Should be able to go from value to null from target', ->
+          target null
+
+          expect(fire_ref.child('key').getData()).toBeNull()
+          expect(target()).toBeNull()
