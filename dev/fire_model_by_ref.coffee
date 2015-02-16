@@ -13,10 +13,12 @@ define (require) ->
       ref_obs_id.subscribe (id) ->
          for key, target of model_obj
             unless id?
-               target.Change_Ref false 
+               target.Change_Fire_Ref false 
                return
 
-            target.Change_Ref fire_ref.child(id).child(key)
+            ref = fire_ref.child(id)
+            ref = ref.child(child_path) if child_path
+            target.Change_Fire_Ref ref.child(key)
          return
 
 

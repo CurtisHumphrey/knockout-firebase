@@ -11,14 +11,18 @@
       options.fire_ref = false;
       ko.fireModel(model_obj, keys_inits, options);
       ref_obs_id.subscribe(function(id) {
-        var key, target;
+        var key, ref, target;
         for (key in model_obj) {
           target = model_obj[key];
           if (id == null) {
-            target.Change_Ref(false);
+            target.Change_Fire_Ref(false);
             return;
           }
-          target.Change_Ref(fire_ref.child(id).child(key));
+          ref = fire_ref.child(id);
+          if (child_path) {
+            ref = ref.child(child_path);
+          }
+          target.Change_Fire_Ref(ref.child(key));
         }
       });
       return model_obj;
