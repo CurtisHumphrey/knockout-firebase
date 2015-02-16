@@ -9,15 +9,20 @@
       ref_obs_id = (_ref1 = options.ref_obs_id) != null ? _ref1 : console.error('requires a observable as ref_obs_id');
       child_path = (_ref2 = options.child_path) != null ? _ref2 : '';
       options.fire_ref = false;
-      target.extend({
+      target = target.extend({
         fireValue: options
       });
       ref_obs_id.subscribe(function(id) {
+        var ref;
         if (id == null) {
           target.Change_Ref(false);
           return;
         }
-        return target.Change_Ref(fire_ref.child(id).child(child_path));
+        ref = fire_ref.child(id);
+        if (child_path) {
+          ref = ref.child(child_path);
+        }
+        return target.Change_Fire_Ref(ref);
       });
       return target;
     };

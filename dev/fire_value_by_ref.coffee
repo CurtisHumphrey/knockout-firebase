@@ -8,7 +8,7 @@ define (require) ->
       child_path = options.child_path ? ''
 
       options.fire_ref = false
-      target.extend
+      target = target.extend
          fireValue: options
 
 
@@ -17,7 +17,9 @@ define (require) ->
             target.Change_Ref false
             return
 
-         target.Change_Ref fire_ref.child(id).child(child_path)
+         ref = fire_ref.child(id)
+         ref = ref.child(child_path) if child_path
+         target.Change_Fire_Ref ref
 
       return target
 
