@@ -48,6 +48,12 @@ module.exports = (grunt) ->
         dest   : 'dev'
         ext    : '.js'
 
+    copy:
+      dist:
+        expand: true
+        flatten: true
+        src   : ['dev/fire_*.js']
+        dest  : 'dist/'
 
     watch:
       configFiles:
@@ -56,7 +62,7 @@ module.exports = (grunt) ->
           reload: true
       reload_jasmine:
         files: ['test/specs/**/*.js','dev/**/*.js']
-        tasks: ['jasmine:dev']
+        tasks: ['jasmine:dev', 'copy']
         options:
           livereload: 1337
       coffee_spec:
