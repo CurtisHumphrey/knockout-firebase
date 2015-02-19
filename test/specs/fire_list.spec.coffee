@@ -42,9 +42,7 @@ define (require) ->
 
         fire_ref.child('key').push 'apples'
 
-        #fire_ref.child('key').once 'value', (snapshot) -> console.log snapshot.val()
         fire_ref.child('key').push 'oranges'
-        #fire_ref.child('key').once 'value', (snapshot) -> console.log snapshot.val()
         
       describe 'Reading from firebase', ->
         beforeEach ->
@@ -67,12 +65,7 @@ define (require) ->
             .toBe 'oranges'
 
         it 'Should load the next value "pears" from the firebase', ->
-          fire_ref.child('key').once 'value', (snapshot) -> console.log snapshot.val()
           fire_ref.child('key').push 'pears'
-          fire_ref.child('key').push 'pears'
-          fire_ref.child('key').push 'pears'
-          fire_ref.child('key').once 'value', (snapshot) -> console.log snapshot.val()
-          console.log target()
 
           expect(target()[2]()).toEqual 'pears'
 

@@ -53,16 +53,7 @@
             return expect(target()[1]()).toBe('oranges');
           });
           it('Should load the next value "pears" from the firebase', function() {
-            fire_ref.child('key').once('value', function(snapshot) {
-              return console.log(snapshot.val());
-            });
             fire_ref.child('key').push('pears');
-            fire_ref.child('key').push('pears');
-            fire_ref.child('key').push('pears');
-            fire_ref.child('key').once('value', function(snapshot) {
-              return console.log(snapshot.val());
-            });
-            console.log(target());
             return expect(target()[2]()).toEqual('pears');
           });
           return xit('Should update value from firebase', function() {

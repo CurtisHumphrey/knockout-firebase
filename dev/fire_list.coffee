@@ -27,7 +27,7 @@ define (require) ->
     if prev_child_key
       for item, index in target.peek()
         if item.key is prev_child_key
-          target.splice index, 0, Fire_Add_Make snapshot
+          target.splice index+1, 0, Fire_Add_Make snapshot
           return
     #else prev_child_key was not present or found
     target.push Fire_Add_Make snapshot

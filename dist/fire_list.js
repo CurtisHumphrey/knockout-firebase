@@ -38,7 +38,7 @@
         for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
           item = _ref[index];
           if (item.key === prev_child_key) {
-            target.splice(index, 0, Fire_Add_Make(snapshot));
+            target.splice(index + 1, 0, Fire_Add_Make(snapshot));
             return;
           }
         }
