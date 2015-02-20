@@ -3,10 +3,10 @@
     var Change_Fire_Ref, Fire_Off, Fire_Sync, Fire_Write, ko;
     ko = require('knockout');
     Fire_Off = function(target, On_Value_Change) {
-      target.fire_sync_on = false;
       if (target.fire_ref && target.fire_sync_on) {
         target.fire_ref.off("value", On_Value_Change);
       }
+      target.fire_sync_on = false;
     };
     Fire_Sync = function(target, On_Value_Change, read_once) {
       var fire_fn;
