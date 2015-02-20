@@ -2,10 +2,10 @@ define (require) ->
    ko = require 'knockout'
 
    Fire_Off = (target, On_Value_Change) ->
-      target.fire_sync_on = false
       if target.fire_ref and target.fire_sync_on
          target.fire_ref.off "value", On_Value_Change
 
+      target.fire_sync_on = false
       return
 
    Fire_Sync = (target, On_Value_Change, read_once) ->
