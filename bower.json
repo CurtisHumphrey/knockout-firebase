@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "homepage": "https://github.com/CurtisHumphrey/knockout-firebase",
   "authors": [
-    "Curtis M. Humphrey",
-    "Ph.D. <curtis@createdwithflair.com>"
+    "Curtis M. Humphrey <curtis@createdwithflair.com>"
   ],
   "description": "Knockout tools for using Firebase as its DB",
   "keywords": [
