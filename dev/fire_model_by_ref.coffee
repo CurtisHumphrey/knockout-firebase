@@ -10,7 +10,7 @@ define (require) ->
       options.fire_ref = false
       ko.fireModel model_obj, keys_inits, options
 
-      ref_obs_id.subscribe (id) ->
+      id_changed = (id) ->
          for key of keys_inits
             target = model_obj[key]
             unless id?
@@ -21,6 +21,10 @@ define (require) ->
             ref = ref.child(child_path) if child_path
             target.Change_Fire_Ref ref.child(key)
          return
+
+      ref_obs_id.subscribe id_changed
+      id_changed ref_obs_id()
+
 
 
       return model_obj

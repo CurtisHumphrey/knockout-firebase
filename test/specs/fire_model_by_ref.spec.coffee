@@ -46,6 +46,20 @@ define (require) ->
 
         obs_id = ko.observable()
 
+      describe 'Setup with a key already set', ->
+        beforeEach ->
+          obs_id = ko.observable 'user_1'
+
+          ko.fireModelByRef model, model, 
+            read_only: true
+            read_once: true
+            fire_ref: fire_ref
+            ref_obs_id: obs_id
+
+        it 'Should load values for user_1', ->
+          expect(model.apples()).toEqual(21)
+          expect(model.oranges()).toEqual(22) 
+
       describe 'Switching without a child_path', ->
         beforeEach ->
           ko.fireModelByRef model, model, 
@@ -108,4 +122,5 @@ define (require) ->
           obs_id 'user_3'
           expect(model.apples()).toBeNull()
           expect(model.oranges()).toBeNull()
+        
     return

@@ -47,6 +47,21 @@
           });
           return obs_id = ko.observable();
         });
+        describe('Setup with a key already set', function() {
+          beforeEach(function() {
+            obs_id = ko.observable('user_1');
+            return ko.fireModelByRef(model, model, {
+              read_only: true,
+              read_once: true,
+              fire_ref: fire_ref,
+              ref_obs_id: obs_id
+            });
+          });
+          return it('Should load values for user_1', function() {
+            expect(model.apples()).toEqual(21);
+            return expect(model.oranges()).toEqual(22);
+          });
+        });
         describe('Switching without a child_path', function() {
           beforeEach(function() {
             return ko.fireModelByRef(model, model, {
