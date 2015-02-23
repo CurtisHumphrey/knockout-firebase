@@ -11,7 +11,8 @@ define (require) ->
       ko.fireModel model_obj, keys_inits, options
 
       ref_obs_id.subscribe (id) ->
-         for key, target of model_obj
+         for key of keys_inits
+            target = model_obj[key]
             unless id?
                target.Change_Fire_Ref false 
                return

@@ -12,7 +12,7 @@
       ko.fireModel(model_obj, keys_inits, options);
       ref_obs_id.subscribe(function(id) {
         var key, ref, target;
-        for (key in model_obj) {
+        for (key in keys_inits) {
           target = model_obj[key];
           if (id == null) {
             target.Change_Fire_Ref(false);
