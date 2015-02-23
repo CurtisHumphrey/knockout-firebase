@@ -32,15 +32,19 @@
       }
     };
     Fire_Add = function(snapshot, prev_child_key) {
-      var index, item, _i, _len, _ref;
-      if (prev_child_key) {
-        _ref = this.peek();
-        for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
-          item = _ref[index];
-          if (item.key === prev_child_key) {
-            this._splice(index + 1, 0, Fire_Add_Make(snapshot));
+      var index, item, _i, _len, _ref, _ref1;
+      _ref = this.peek();
+      for (index = _i = 0, _len = _ref.length; _i < _len; index = ++_i) {
+        item = _ref[index];
+        if (prev_child_key && item.key === prev_child_key) {
+          if (((_ref1 = _ref[index + 1]) != null ? _ref1.key : void 0) === snapshot.key()) {
             return;
           }
+          this._splice(index + 1, 0, Fire_Add_Make(snapshot));
+          return;
+        }
+        if (item.key === snapshot.key()) {
+          return;
         }
       }
       this._push(Fire_Add_Make(snapshot));
@@ -95,18 +99,25 @@
       throw new Error('ko method called is not currently implemented for fire lists');
     };
     Fire_Load = function(list_snapshot) {
-      var new_list;
+      var fn, last_key, new_list;
       new_list = [];
+      last_key = null;
       list_snapshot.forEach(function(child_snapshot) {
-        return new_list.push(Fire_Add_Make(child_snapshot));
+        new_list.push(Fire_Add_Make(child_snapshot));
+        return last_key = child_snapshot.key();
       });
       this._fire_subs.push({
         type: 'child_removed',
         fn: this.fire_ref.on('child_removed', Fire_Remove, void 0, this)
       });
+      if (last_key) {
+        fn = this.fire_ref.startAt(null, last_key).on('child_added', Fire_Add, void 0, this);
+      } else {
+        fn = this.fire_ref.on('child_added', Fire_Add, void 0, this);
+      }
       this._fire_subs.push({
         type: 'child_added',
-        fn: this.fire_ref.on('child_added', Fire_Add, void 0, this)
+        fn: fn
       });
       this._fire_subs.push({
         type: 'child_changed',
