@@ -55,6 +55,7 @@
           });
           it('Should load the next value "pears" from the firebase', function() {
             fire_ref.child('key').push('pears');
+            console.log(fire_ref.getData());
             return expect(target()[2]()).toEqual('pears');
           });
           it('Should update value when firebase changes', function() {

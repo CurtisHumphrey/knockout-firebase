@@ -24,11 +24,15 @@ define (require) ->
     return
 
   Fire_Add = (snapshot, prev_child_key) ->
-    if prev_child_key
-      for item, index in this.peek()
-        if item.key is prev_child_key
-          this._splice index+1, 0, Fire_Add_Make snapshot
-          return
+    for item, index in this.peek()
+      if prev_child_key and item.key is prev_child_key
+        #check if key is next
+        return if _ref[index+1]?.key is snapshot.key()
+
+        this._splice index+1, 0, Fire_Add_Make snapshot
+        return
+      return if item.key is snapshot.key() #exists already
+
     #else prev_child_key was not present or found
     this._push Fire_Add_Make snapshot
     return
@@ -78,17 +82,24 @@ define (require) ->
 
   Fire_Load = (list_snapshot) ->
     new_list = []
+    last_key = null
 
     list_snapshot.forEach (child_snapshot) ->
       new_list.push Fire_Add_Make child_snapshot
+      last_key = child_snapshot.key()
 
     this._fire_subs.push
       type: 'child_removed'
       fn: this.fire_ref.on 'child_removed', Fire_Remove, undefined, this
 
+    if last_key
+      fn = this.fire_ref.startAt(null, last_key).on 'child_added', Fire_Add, undefined, this
+    else
+      fn = this.fire_ref.on 'child_added', Fire_Add, undefined, this
+
     this._fire_subs.push
       type: 'child_added'
-      fn: this.fire_ref.on 'child_added', Fire_Add, undefined, this
+      fn: fn
 
     this._fire_subs.push
       type: 'child_changed'

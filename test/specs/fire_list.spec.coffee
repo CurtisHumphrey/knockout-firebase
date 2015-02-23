@@ -66,6 +66,7 @@ define (require) ->
 
         it 'Should load the next value "pears" from the firebase', ->
           fire_ref.child('key').push 'pears'
+          console.log( fire_ref.getData())
 
           expect(target()[2]()).toEqual 'pears'
 
