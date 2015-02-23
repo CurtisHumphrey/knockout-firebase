@@ -160,6 +160,18 @@ define (require) ->
           expect(fire_ref.child('key').getData()).toEqual "next"
           expect(target()).toEqual "next"
 
+      describe 'Writing with initial value', ->
+        beforeEach ->
+          target = ko.fireObservable "starting value", 
+            fire_ref: fire_ref.child 'key2'
+
+        it 'Should not reset the initial value if the firebase has no record', ->
+          expect(target()).toEqual "starting value"
+
+        it 'Should update firebase with the inital value if firebase has no record', ->
+          expect(fire_ref.child('key2').getData()).toEqual "starting value"
+        
+
       describe 'Handling non-happy paths', ->
         beforeEach ->
           fire_ref.set
@@ -167,9 +179,6 @@ define (require) ->
 
           target = ko.fireObservable false, 
             fire_ref: fire_ref.child 'key'
-
-        it 'Should be able to handle if the location does not exists - returns null', ->
-          expect(target()).toBeNull()
 
         it 'Should be able to go from null to value from firebase', ->
           fire_ref.set
@@ -184,7 +193,9 @@ define (require) ->
           expect(target()).toEqual "next"
 
         it 'Should be able to go from value to null from target', ->
+          console.log fire_ref.getData()
           target null
+          console.log fire_ref.getData()
 
           expect(fire_ref.child('key').getData()).toBeNull()
           expect(target()).toBeNull()
