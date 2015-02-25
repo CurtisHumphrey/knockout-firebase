@@ -5,18 +5,25 @@ define (require) ->
       #this is a observable
       val = snapshot.val()
       if val is null and this() is null
-         return #do nothing
+         #do nothing
       else if val is null and not this.read_only
          #write back the default value
+         val = this()
          Fire_Write this, this()
       else
          this val
+
+      callback val for callback in this._once_loaded
+      this._once_loaded.length = 0
+      this._has_loaded = true
+
 
    Fire_Off = (target) ->
       if target.fire_ref and target.fire_sync_on
          target.fire_ref.off "value", Fire_On_Value_Change, target
 
       target.fire_sync_on = false
+      target._has_loaded = false
       return
 
    Fire_Sync = (target) ->
@@ -54,7 +61,11 @@ define (require) ->
       #TODO handle error
       return value
 
-
+   Once_Loaded = (target, callback) ->
+      if target._has_loaded
+         callback target()
+      else
+         target._once_loaded.push callback
 
    ko.extenders.fireValue = (target, options) ->
       target.read_only = options.read_only ? false
@@ -79,6 +90,12 @@ define (require) ->
       new_target.dispose = () ->
          target.Fire_Off()
          old_dispose()
+
+      target._once_loaded = []
+      target._has_loaded = false
+
+      new_target.Once_Loaded = (callback) -> 
+         Once_Loaded target, callback
 
       # setup sync
       new_target.Change_Fire_Ref options.fire_ref

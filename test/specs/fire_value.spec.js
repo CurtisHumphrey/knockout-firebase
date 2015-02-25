@@ -25,6 +25,11 @@
           target = ko.fireObservable(false, {});
           return expect(_.isFunction(target.Get_Fire_Ref)).toBeTruthy();
         });
+        it('Should add a Once_Loaded function to the extended observable', function() {
+          var target;
+          target = ko.fireObservable(false, {});
+          return expect(_.isFunction(target.Once_Loaded)).toBeTruthy();
+        });
       });
       describe('defaults with no fire_ref', function() {
         var target;
@@ -51,6 +56,39 @@
             fireValue: {}
           });
           return expect(target1()).toBeNull();
+        });
+      });
+      describe('Working with Once Loaded', function() {
+        var fire_ref, obj, target;
+        fire_ref = null;
+        obj = null;
+        target = null;
+        beforeEach(function() {
+          fire_ref = new MockFirebase('testing://');
+          fire_ref.set({
+            key: "test"
+          });
+          fire_ref.flush();
+          obj = {
+            callback: function() {}
+          };
+          spyOn(obj, 'callback');
+          return target = ko.fireObservable(false, {
+            read_only: true,
+            read_once: true,
+            fire_ref: fire_ref.child('key')
+          });
+        });
+        it('Should call back a function after it has loaded values', function() {
+          target.Once_Loaded(obj.callback);
+          expect(obj.callback).not.toHaveBeenCalled();
+          fire_ref.flush();
+          return expect(obj.callback).toHaveBeenCalledWith("test");
+        });
+        return it('Should call back right way if the values are already loaded', function() {
+          fire_ref.flush();
+          target.Once_Loaded(obj.callback);
+          return expect(obj.callback).toHaveBeenCalledWith("test");
         });
       });
       return describe('Working with a fire_ref', function() {

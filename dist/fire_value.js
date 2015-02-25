@@ -1,23 +1,32 @@
 (function() {
   define(function(require) {
-    var Change_Fire_Ref, Fire_Off, Fire_On_Value_Change, Fire_Sync, Fire_Write, ko;
+    var Change_Fire_Ref, Fire_Off, Fire_On_Value_Change, Fire_Sync, Fire_Write, Once_Loaded, ko;
     ko = require('knockout');
     Fire_On_Value_Change = function(snapshot) {
-      var val;
+      var callback, val, _i, _len, _ref;
       val = snapshot.val();
       if (val === null && this() === null) {
 
       } else if (val === null && !this.read_only) {
-        return Fire_Write(this, this());
+        val = this();
+        Fire_Write(this, this());
       } else {
-        return this(val);
+        this(val);
       }
+      _ref = this._once_loaded;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
+        callback(val);
+      }
+      this._once_loaded.length = 0;
+      return this._has_loaded = true;
     };
     Fire_Off = function(target) {
       if (target.fire_ref && target.fire_sync_on) {
         target.fire_ref.off("value", Fire_On_Value_Change, target);
       }
       target.fire_sync_on = false;
+      target._has_loaded = false;
     };
     Fire_Sync = function(target) {
       var fire_fn;
@@ -49,6 +58,13 @@
       }
       return value;
     };
+    Once_Loaded = function(target, callback) {
+      if (target._has_loaded) {
+        return callback(target());
+      } else {
+        return target._once_loaded.push(callback);
+      }
+    };
     ko.extenders.fireValue = function(target, options) {
       var new_target, old_dispose, _ref, _ref1;
       target.read_only = (_ref = options.read_only) != null ? _ref : false;
@@ -73,6 +89,11 @@
       new_target.dispose = function() {
         target.Fire_Off();
         return old_dispose();
+      };
+      target._once_loaded = [];
+      target._has_loaded = false;
+      new_target.Once_Loaded = function(callback) {
+        return Once_Loaded(target, callback);
       };
       new_target.Change_Fire_Ref(options.fire_ref);
       return new_target;

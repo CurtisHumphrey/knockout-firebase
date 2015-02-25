@@ -32,6 +32,12 @@ define (require) ->
 
         expect _.isFunction target.Get_Fire_Ref 
           .toBeTruthy()
+
+      it 'Should add a Once_Loaded function to the extended observable', ->
+        target = ko.fireObservable false, {}
+
+        expect _.isFunction target.Once_Loaded 
+          .toBeTruthy()
       return    
 
     describe 'defaults with no fire_ref', ->
@@ -62,6 +68,44 @@ define (require) ->
         expect(target1()).toBeNull()
 
       return
+
+    describe 'Working with Once Loaded', ->
+      fire_ref = null
+      obj = null
+      target = null
+
+      beforeEach ->
+        fire_ref = new MockFirebase('testing://')
+        fire_ref.set
+          key: "test"
+
+        fire_ref.flush()
+
+        obj =
+          callback: () -> return
+
+        spyOn obj, 'callback'
+
+        target = ko.fireObservable false, 
+          read_only: true
+          read_once: true
+          fire_ref: fire_ref.child 'key'
+
+      it 'Should call back a function after it has loaded values', ->
+        target.Once_Loaded obj.callback
+
+        expect(obj.callback).not.toHaveBeenCalled()
+
+        fire_ref.flush()
+
+        expect(obj.callback).toHaveBeenCalledWith "test"
+
+      it 'Should call back right way if the values are already loaded', ->
+        fire_ref.flush()
+
+        target.Once_Loaded obj.callback
+
+        expect(obj.callback).toHaveBeenCalledWith "test"
 
     describe 'Working with a fire_ref', ->
       target = null
