@@ -3,13 +3,14 @@
     var Change_Fire_Ref, Fire_Off, Fire_On_Value_Change, Fire_Sync, Fire_Write, Once_Loaded, ko;
     ko = require('knockout');
     Fire_On_Value_Change = function(snapshot) {
-      var callback, val, _i, _len, _ref;
+      var callback, val, write_back, _i, _len, _ref;
+      write_back = false;
       val = snapshot.val();
       if (val === null && this() === null) {
 
       } else if (val === null && !this.read_only) {
         val = this();
-        Fire_Write(this, this());
+        write_back = true;
       } else {
         this(val);
       }
@@ -19,7 +20,10 @@
         callback(val);
       }
       this._once_loaded.length = 0;
-      return this._has_loaded = true;
+      this._has_loaded = true;
+      if (write_back) {
+        return Fire_Write(this, this());
+      }
     };
     Fire_Off = function(target) {
       if (target.fire_ref && target.fire_sync_on) {
@@ -48,7 +52,7 @@
       if (value === void 0) {
         value = null;
       }
-      if (!target.read_only && target.fire_ref) {
+      if (!target.read_only && target.fire_ref && target._has_loaded) {
         if (target.read_once || value === null) {
           target(value);
         }

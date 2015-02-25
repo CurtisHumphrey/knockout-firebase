@@ -3,19 +3,22 @@ define (require) ->
 
    Fire_On_Value_Change = (snapshot) ->
       #this is a observable
+      write_back = false
       val = snapshot.val()
       if val is null and this() is null
          #do nothing
       else if val is null and not this.read_only
          #write back the default value
          val = this()
-         Fire_Write this, this()
+         write_back = true
       else
          this val
 
       callback val for callback in this._once_loaded
       this._once_loaded.length = 0
       this._has_loaded = true
+
+      Fire_Write this, this() if write_back
 
 
    Fire_Off = (target) ->
@@ -49,7 +52,7 @@ define (require) ->
    Fire_Write = (target, value) ->
       #firebase undefined protection
       value = null if value is undefined
-      if not target.read_only and target.fire_ref         
+      if not target.read_only and target.fire_ref and target._has_loaded         
          if target.read_once or value is null 
             #else sync will take care of it 
             target value 
