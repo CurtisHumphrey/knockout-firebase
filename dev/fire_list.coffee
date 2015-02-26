@@ -1,46 +1,59 @@
 define (require) ->
   ko = require 'knockout'
 
-  Fire_Add_Make = (snapshot) ->
-    real_ko = ko.observable snapshot.val()
+  Fire_Add_Make = (snapshot, options) ->
+    options.read_only ?= false
+    #expecting options.keys_inits
+    
+    model_obj = {}
+    model_obj._key = snapshot.key()
+
     fire_ref = snapshot.ref()
 
-    item = ko.pureComputed
-      read: real_ko
-      write: (value) ->
-        value = null if value is undefined
-        fire_ref.set value
-        return value
-    item.write_locally = real_ko
-    item.key = snapshot.key()
+    for key, init of options.keys_inits
+      val = snapshot.child(key).val()
 
-    return item
+      real_ko = ko.observable val ? init
+
+      item = ko.pureComputed
+        read: real_ko
+        write: (value) ->
+          value = null if value is undefined
+          fire_ref.child(key).set value
+          return value
+      item.write_locally = real_ko
+
+      model_obj[key] = item
+
+    return model_obj
 
   Fire_Find_n_Exec = (target, snapshot, exec_fn) ->
     for item, index in target.peek()
-      if item.key is snapshot.key()
+      if item._key is snapshot.key()
         exec_fn target, snapshot, item, index
         return
     return
 
   Fire_Add = (snapshot, prev_child_key) ->
+    #this is target
     for item, index in this.peek()
-      if prev_child_key and item.key is prev_child_key
+      if prev_child_key and item._key is prev_child_key
         #check if key is next
-        return if _ref[index+1]?.key is snapshot.key()
+        return if _ref[index+1]?._key is snapshot.key()
 
-        this._splice index+1, 0, Fire_Add_Make snapshot
+        this._splice index+1, 0, Fire_Add_Make(snapshot, this)
         return
-      return if item.key is snapshot.key() #exists already
+      return if item._key is snapshot.key() #exists already
 
     #else prev_child_key was not present or found
-    this._push Fire_Add_Make snapshot
+    this._push Fire_Add_Make(snapshot, this)
     return
 
 
-
-  _Fire_Changed = (target, snapshot, item, index) ->
-    item.write_locally snapshot.val()
+  _Fire_Changed = (target, snapshot, model_obj, index) ->
+    for key of target.keys_inits
+      model_obj[key].write_locally snapshot.child(key).val()
+    return
 
   Fire_Changed = (snapshot) ->
     Fire_Find_n_Exec this, snapshot, _Fire_Changed
@@ -68,7 +81,7 @@ define (require) ->
     list = this.peek()
     for i in [index..index+count-1]
       if list[i]
-        this.fire_ref.child(list[i].key).remove()
+        this.fire_ref.child(list[i]._key).remove()
     return
 
   Ko_Pop = () ->
@@ -83,34 +96,35 @@ define (require) ->
   Fire_Load = (list_snapshot) ->
     new_list = []
     last_key = null
+    target = this
 
     list_snapshot.forEach (child_snapshot) ->
-      new_list.push Fire_Add_Make child_snapshot
+      new_list.push Fire_Add_Make(child_snapshot, target)
       last_key = child_snapshot.key()
 
-    this._fire_subs.push
+    target._fire_subs.push
       type: 'child_removed'
-      fn: this.fire_ref.on 'child_removed', Fire_Remove, undefined, this
+      fn: target.fire_ref.on 'child_removed', Fire_Remove, undefined, target
 
     if last_key
-      fn = this.fire_ref.startAt(null, last_key).on 'child_added', Fire_Add, undefined, this
+      fn = target.fire_ref.startAt(null, last_key).on 'child_added', Fire_Add, undefined, target
     else
-      fn = this.fire_ref.on 'child_added', Fire_Add, undefined, this
+      fn = target.fire_ref.on 'child_added', Fire_Add, undefined, target
 
-    this._fire_subs.push
+    target._fire_subs.push
       type: 'child_added'
       fn: fn
 
-    this._fire_subs.push
+    target._fire_subs.push
       type: 'child_changed'
-      fn: this.fire_ref.on 'child_changed', Fire_Changed, undefined, this
+      fn: target.fire_ref.on 'child_changed', Fire_Changed, undefined, target
 
-    this new_list
+    target new_list
 
   ko.extenders.fireList = (target, options) ->
     fire_ref = options.fire_ref
-    read_only = options.read_only ? false
-    read_once = options.read_once ? false
+    target.keys_inits = options.keys_inits
+    target.read_only = options.read_only ? false
 
     target.fire_ref = fire_ref
     target._fire_subs = []

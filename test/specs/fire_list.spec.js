@@ -33,34 +33,49 @@
         beforeEach(function() {
           fire_ref = new MockFirebase('testing://');
           fire_ref.autoFlush();
-          fire_ref.child('key').push('apples');
-          return last_ref = fire_ref.child('key').push('oranges');
+          fire_ref.child('fruit').push({
+            type: 'apples',
+            count: 3
+          });
+          last_ref = fire_ref.child('fruit').push({
+            type: 'oranges',
+            count: 4
+          });
+          return target = ko.fireList({
+            fire_ref: fire_ref.child('fruit'),
+            keys_inits: {
+              type: null,
+              count: 0
+            }
+          });
         });
         describe('Reading from firebase', function() {
-          beforeEach(function() {
-            return target = ko.fireList({
-              fire_ref: fire_ref.child('key')
-            });
-          });
+          beforeEach(function() {});
           it('Should load the 2 values from the firebase', function() {
             return expect(target().length).toEqual(2);
           });
           it('Should have each value be an observable', function() {
-            expect(ko.isObservable(target()[0])).toBeTruthy();
-            return expect(ko.isObservable(target()[1])).toBeTruthy();
+            expect(ko.isObservable(target()[0].type)).toBeTruthy();
+            return expect(ko.isObservable(target()[0].count)).toBeTruthy();
           });
           it('Should have each value be from firebase', function() {
-            expect(target()[0]()).toBe('apples');
-            return expect(target()[1]()).toBe('oranges');
+            expect(target()[0].type()).toBe('apples');
+            return expect(target()[1].type()).toBe('oranges');
           });
-          it('Should load the next value "pears" from the firebase', function() {
-            fire_ref.child('key').push('pears');
-            console.log(fire_ref.getData());
-            return expect(target()[2]()).toEqual('pears');
+          it('Should load the next model "pears" from the firebase', function() {
+            fire_ref.child('fruit').push({
+              type: 'pears',
+              count: 11
+            });
+            return expect(target()[2].type()).toEqual('pears');
           });
           it('Should update value when firebase changes', function() {
-            last_ref.set('grapes');
-            return expect(target()[1]()).toEqual('grapes');
+            last_ref.set({
+              type: 'grapes',
+              count: 7
+            });
+            expect(target()[1].type()).toEqual('grapes');
+            return expect(target()[1].count()).toEqual(7);
           });
           return it('Should remove value when firebase changes', function() {
             last_ref.remove();
@@ -68,41 +83,43 @@
           });
         });
         describe('Writing to firebase', function() {
-          beforeEach(function() {
-            return target = ko.fireList({
-              fire_ref: fire_ref.child('key')
-            });
-          });
+          beforeEach(function() {});
           it('Should write value to firebase and ko', function() {
-            target()[1]("grapes");
-            expect(last_ref.getData()).toEqual("grapes");
-            return expect(target()[1]()).toEqual("grapes");
+            target()[1].count(2);
+            console.log(last_ref.getData());
+            expect(last_ref.child('count').getData()).toEqual(2);
+            return expect(target()[1].count()).toEqual(2);
           });
           it('Should add (push) a value to firebase and ko', function() {
             var data, lastKey;
-            target.push("grapes");
-            data = fire_ref.child('key').getData();
+            target.push({
+              type: "grapes",
+              count: 2
+            });
+            data = fire_ref.child('fruit').getData();
             lastKey = _.last(_.keys(data).sort());
-            expect(data[lastKey]).toEqual("grapes");
-            return expect(target()[2]()).toEqual("grapes");
+            expect(data[lastKey].type).toEqual("grapes");
+            expect(data[lastKey].count).toEqual(2);
+            expect(target()[2].type()).toEqual("grapes");
+            return expect(target()[2].count()).toEqual(2);
           });
           it('Should remove a value (pop) to firebase and ko', function() {
             var data, lastKey;
             target.pop();
-            expect(_.keys(fire_ref.child('key').getData()).length).toEqual(1);
+            expect(_.keys(fire_ref.child('fruit').getData()).length).toEqual(1);
             expect(target().length).toEqual(1);
-            data = fire_ref.child('key').getData();
+            data = fire_ref.child('fruit').getData();
             lastKey = _.last(_.keys(data).sort());
-            return expect(data[lastKey]).not.toEqual("oranges");
+            return expect(data[lastKey].type).not.toEqual("oranges");
           });
           return it('Should remove a value (shift) to firebase and ko', function() {
             var data, firstKey;
             target.shift();
-            expect(_.keys(fire_ref.child('key').getData()).length).toEqual(1);
+            expect(_.keys(fire_ref.child('fruit').getData()).length).toEqual(1);
             expect(target().length).toEqual(1);
-            data = fire_ref.child('key').getData();
+            data = fire_ref.child('fruit').getData();
             firstKey = _.first(_.keys(data).sort());
-            return expect(data[firstKey]).not.toEqual("apples");
+            return expect(data[firstKey].type).not.toEqual("apples");
           });
         });
       });
