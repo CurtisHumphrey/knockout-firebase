@@ -86,7 +86,6 @@
           beforeEach(function() {});
           it('Should write value to firebase and ko', function() {
             target()[1].count(2);
-            console.log(last_ref.getData());
             expect(last_ref.child('count').getData()).toEqual(2);
             return expect(target()[1].count()).toEqual(2);
           });

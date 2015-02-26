@@ -101,9 +101,6 @@ define (require) ->
         it 'Should write value to firebase and ko', ->
           target()[1].count 2
 
-
-          console.log last_ref.getData()
-
           # fire_ref.child('fruit').once 'value', (snapshot) -> console.log snapshot.val()
           expect(last_ref.child('count').getData()).toEqual 2
           # console.log ko.toJSON target
