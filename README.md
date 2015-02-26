@@ -7,7 +7,7 @@ Knockout tools for using Firebase as its DB, inspired by [FireBind by tyrsius](h
  3. Sync an firebase list (done)
  4. Sync a value based on the path being an observable i.e., referenced value (done)
  5. Sync a object based on the path being an observable i.e., referenced object (done)
- 6. Sync a combination of 1-3 (3,1 done, 3,2 not yet)
+ 6. Sync a combination of 1-3 (3,1 done, 3,2 done)
  7. Sync can be read-only or bi-directional (for 1,2,4,5 done)
  8. Sync can be read-once or continue reading (for 1,2,4,5 done)
 

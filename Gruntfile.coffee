@@ -84,3 +84,4 @@ module.exports = (grunt) ->
   grunt.registerTask 'dev', ['coffee', 'connect:dev:livereload', 'open', 'watch']
   grunt.registerTask 'build', ['coffee','jasmine','copy']
   grunt.registerTask 'default', ['git', 'dev']
+  grunt.registerTask 'test', ['coffee', 'jasmine']
