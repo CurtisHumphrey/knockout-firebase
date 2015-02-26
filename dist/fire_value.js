@@ -102,12 +102,13 @@
       new_target.Change_Fire_Ref(options.fire_ref);
       return new_target;
     };
-    return ko.fireObservable = function(init_val, options) {
+    ko.fireObservable = function(init_val, options) {
       var target;
       return target = ko.observable(init_val).extend({
         fireValue: options
       });
     };
+    return ko.fireValue = ko.fireObservable;
   });
 
 }).call(this);

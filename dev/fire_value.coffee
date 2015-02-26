@@ -108,3 +108,5 @@ define (require) ->
    ko.fireObservable = (init_val, options) ->
       target = ko.observable(init_val).extend
          fireValue: options
+
+   ko.fireValue = ko.fireObservable #alias

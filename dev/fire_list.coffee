@@ -150,5 +150,5 @@ define (require) ->
     return target
 
   ko.fireList = (options) ->
-      target = ko.observableArray().extend
+      target = ko.observableArray([]).extend
          fireList: options

@@ -52,7 +52,7 @@ module.exports = (grunt) ->
       dist:
         expand: true
         flatten: true
-        src   : ['dev/fire_*.js']
+        src   : ['dev/fire_*.js','dev/knockout_firebase.js']
         dest  : 'dist/'
 
     watch:
@@ -82,4 +82,5 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'rerun', ['coffee', 'connect:dev:livereload', 'watch']
   grunt.registerTask 'dev', ['coffee', 'connect:dev:livereload', 'open', 'watch']
+  grunt.registerTask 'build', ['coffee','jasmine','copy']
   grunt.registerTask 'default', ['git', 'dev']

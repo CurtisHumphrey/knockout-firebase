@@ -1,17 +1,18 @@
 {
   "name": "knockout-firebase",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "homepage": "https://github.com/CurtisHumphrey/knockout-firebase",
   "authors": [
     "Curtis M. Humphrey <curtis@createdwithflair.com>"
   ],
+  "main": "dist/knockout-firebase.js",
   "description": "Knockout tools for using Firebase as its DB",
   "keywords": [
     "firebase",
-    "knockout"
+    "knockout",
+    "knockoutjs"
   ],
   "license": "MIT",
-  "private": true,
   "ignore": [
     "**/.*",
     "node_modules",

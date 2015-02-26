@@ -165,7 +165,7 @@
     };
     return ko.fireList = function(options) {
       var target;
-      return target = ko.observableArray().extend({
+      return target = ko.observableArray([]).extend({
         fireList: options
       });
     };
