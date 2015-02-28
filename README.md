@@ -21,6 +21,10 @@ This package is designed to be used with a requirejs type project. Include the d
 ## dependences
  1. "knockout" defined for requirejs
  2. "firebase" defined for requirejs
+ 3. requirejs
+
+## Install
+via ```bower install knockout-firebase```
 
 ## Using Fire Value
 Fire value is a observable linked to a firebase path.
