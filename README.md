@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/CurtisHumphrey/knockout-firebase.svg?branch=master)](https://travis-ci.org/CurtisHumphrey/knockout-firebase)
 
 #knockout-firebase
-Knockout tools for using Firebase as its DB, inspired by [FireBind by tyrsius](https://github.com/tyrsius/FireBind)
+Knockout tools for using Firebase as its DB, inspired by [FireBind by tyrsius](https://github.com/tyrsius/FireBind). This is not an offical library from firebase.
 
 # Goals
  1. Sync just a value (done)
