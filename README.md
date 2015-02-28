@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/CurtisHumphrey/knockout-firebase.svg?branch=master)](https://travis-ci.org/CurtisHumphrey/knockout-firebase)
 
 #knockout-firebase
-Knockout tools for using Firebase as its DB, inspired by [FireBind by tyrsius](https://github.com/tyrsius/FireBind)
+Knockout tools for using Firebase as its DB, inspired by [FireBind by tyrsius](https://github.com/tyrsius/FireBind). This is not an offical library from firebase.
 
 # Goals
  1. Sync just a value (done)
@@ -21,6 +21,10 @@ This package is designed to be used with a requirejs type project. Include the d
 ## dependences
  1. "knockout" defined for requirejs
  2. "firebase" defined for requirejs
+ 3. requirejs
+
+## Install
+via ```bower install knockout-firebase```
 
 ## Using Fire Value
 Fire value is a observable linked to a firebase path.
