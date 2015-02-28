@@ -30,6 +30,20 @@ module.exports = (grunt) ->
             requireConfig:
               baseUrl: 'dev'
 
+    requirejs:
+      compile:
+        options:
+          baseUrl: 'dev'
+          mainConfigFile: "dev/require_config.js"
+          out: "dist/knockout_firebase.js"
+          name: "knockout_firebase"
+          optimize: 'none'
+          paths:
+            knockout: 'empty:'
+            lodash: 'empty:'
+            mockfirebase: 'empty:'
+
+
     exec:
       git:
         cmd: 'START "" "C:\\Program Files\\TortoiseGit\\bin\\TortoiseGitProc.exe" /command:log /path:..'
@@ -52,7 +66,7 @@ module.exports = (grunt) ->
       dist:
         expand: true
         flatten: true
-        src   : ['dev/fire_*.js','dev/knockout_firebase.js']
+        src   : ['dev/fire_*.js']
         dest  : 'dist/'
 
     watch:
@@ -82,6 +96,6 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'rerun', ['coffee', 'connect:dev:livereload', 'watch']
   grunt.registerTask 'dev', ['coffee', 'connect:dev:livereload', 'open', 'watch']
-  grunt.registerTask 'build', ['coffee','jasmine','copy']
+  grunt.registerTask 'build', ['coffee','jasmine','requirejs','copy']
   grunt.registerTask 'default', ['git', 'dev']
   grunt.registerTask 'test', ['coffee', 'jasmine']

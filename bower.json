@@ -1,11 +1,11 @@
 {
   "name": "knockout-firebase",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/CurtisHumphrey/knockout-firebase",
   "authors": [
     "Curtis M. Humphrey <curtis@createdwithflair.com>"
   ],
-  "main": "dist/knockout-firebase.js",
+  "main": "dist/knockout_firebase.js",
   "description": "Knockout tools for using Firebase as its DB",
   "keywords": [
     "firebase",
@@ -23,6 +23,6 @@
   "devDependencies": {
     "knockout": "~3.2.0",
     "lodash": "~3.2.0",
-    "mockfirebase": "https://github.com/CurtisHumphrey/mockfirebase.git"
+    "mockfirebase": "git://github.com/CurtisHumphrey/mockfirebase.git"
   }
 }
