@@ -1,112 +1,128 @@
 define (require) ->
-   ko = require 'knockout'
+  ko = require 'knockout'
 
-   Fire_On_Value_Change = (snapshot) ->
-      #this is a observable
-      write_back = false
-      val = snapshot.val()
-      if val is null and this() is null
-         #do nothing
-      else if val is null and not this.read_only
-         #write back the default value
-         val = this()
-         write_back = true
-      else
-         this val
-
-      callback val for callback in this._once_loaded
-      this._once_loaded.length = 0
-      this._has_loaded = true
-
-      Fire_Write this, this() if write_back
-
-
-   Fire_Off = (target) ->
-      if target.fire_ref and target.fire_sync_on
-         target.fire_ref.off "value", Fire_On_Value_Change, target
-
-      target.fire_sync_on = false
-      target._has_loaded = false
-      return
-
-   Fire_Sync = (target) ->
-      Fire_Off target
-
-      fire_fn = if target.read_once then 'once' else 'on'
-      target.fire_ref[fire_fn] "value", Fire_On_Value_Change, null, target
-
-      target.fire_sync_on = !target.read_once
-
-      return
-
-   Change_Fire_Ref = (fire_ref, target) ->
-      if fire_ref
-         target.fire_ref = fire_ref
-         Fire_Sync target
-      else
-         Fire_Off target
-         target.fire_ref = false
-
-      return
-
-   Fire_Write = (target, value) ->
-      #firebase undefined protection
-      value = null if value is undefined
-      if not target.read_only and target.fire_ref and target._has_loaded         
-         if target.read_once or value is null 
-            #else sync will take care of it 
-            target value 
-
-         target.fire_ref.set value
-      else
-         target value
-
-      #TODO handle error
-      return value
-
-   Once_Loaded = (target, callback) ->
-      if target._has_loaded
-         callback target()
-      else
-         target._once_loaded.push callback
-
-   ko.extenders.fireValue = (target, options) ->
-      target.read_only = options.read_only ? false
-      target.read_once = options.read_once ? false
-      #options.fire_ref will be use at the end
-
-      target.fire_sync_on = false
+  class Fire_Value
+    constructor: (target, options) ->
+      @read_only = options.read_only ? false
+      @read_once = options.read_once ? false
+      @fire_ref = false
+      @fire_sync_on = false
+      @_once_loaded = []
+      @_has_loaded = false
 
       if target() is undefined
-         target null
+        target null
 
+      @target = target
+
+    Create_New_Target: (fire_ref) ->
       new_target = ko.pureComputed
-         read: target
-         write: (value) -> Fire_Write target, value
+        read: @target
+        write: @Fire_Write
+        owner: @
 
-      new_target.Change_Fire_Ref = (fire_ref) -> 
-         Change_Fire_Ref fire_ref, target
+      new_target.Change_Fire_Ref = @Change_Fire_Ref
       
-      new_target.Get_Fire_Ref = () -> target.fire_ref
+      new_target.Get_Fire_Ref = @Get_Fire_Ref
 
       old_dispose = new_target.dispose
+      fire_value = @
       new_target.dispose = () ->
-         target.Fire_Off()
-         old_dispose()
+        fire_value.Fire_Off()
+        old_dispose()
 
-      target._once_loaded = []
-      target._has_loaded = false
-
-      new_target.Once_Loaded = (callback) -> 
-         Once_Loaded target, callback
+      new_target.Once_Loaded = @Once_Loaded
 
       # setup sync
-      new_target.Change_Fire_Ref options.fire_ref
+      new_target.Change_Fire_Ref fire_ref
 
       return new_target
 
-   ko.fireObservable = (init_val, options) ->
-      target = ko.observable(init_val).extend
-         fireValue: options
+    Fire_On_Value_Change: (snapshot) ->
+      #this is a observable
+      write_back = false
+      value = snapshot.val()
+      if value is null and @target() is null
+        #do nothing
+      else if value is null and not this.read_only
+        #write back the default value
+        value = @target()
+        write_back = true
+      else
+        @target value
 
-   ko.fireValue = ko.fireObservable #alias
+      callback value for callback in @_once_loaded
+      @_once_loaded.length = 0
+      @_has_loaded = true
+
+      @Fire_Write value if write_back
+
+
+    Fire_Off: () ->
+      if @fire_ref and @fire_sync_on
+        @fire_ref.off "value", @Fire_On_Value_Change, @
+
+      @fire_sync_on = false
+      @_has_loaded = false
+      return
+
+    Fire_Sync: () ->
+      @Fire_Off()
+
+      fire_fn = if @read_once then 'once' else 'on'
+      #ISSUE firebase will not expect this call 1) null 2) target is a function
+      @fire_ref[fire_fn] "value", @Fire_On_Value_Change, @Fire_Error, @
+      @fire_sync_on = !@read_once
+
+      return
+
+    Fire_Error: (error) ->
+      console.log error
+
+    Fire_Write: (value) ->
+      #firebase undefined protection
+      value = null if value is undefined
+      if not @read_only and @fire_ref and @_has_loaded         
+        if @read_once or value is null 
+          #else sync will take care of it 
+          @target value 
+
+        @fire_ref.set value
+      else
+        @target value
+
+      return value
+
+    # attached to new target
+    Change_Fire_Ref: (fire_ref) =>
+      if fire_ref
+        @fire_ref = fire_ref
+        @Fire_Sync()
+      else
+        @Fire_Off()
+        @fire_ref = false
+
+      return
+
+    # attached to new target
+    Get_Fire_Ref: () =>
+      @fire_ref
+
+    # attached to new target
+    Once_Loaded: (callback) =>
+      if @_has_loaded
+        callback @target()
+      else
+        @_once_loaded.push callback
+      return
+
+  ko.extenders.fireValue = (target, options) ->
+    fire_value = new Fire_Value(target, options)
+
+    return fire_value.Create_New_Target options.fire_ref
+
+  ko.fireObservable = (init_val, options) ->
+    target = ko.observable(init_val).extend
+      fireValue: options
+
+  ko.fireValue = ko.fireObservable #alias

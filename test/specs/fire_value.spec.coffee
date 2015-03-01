@@ -36,6 +36,8 @@ define (require) ->
       it 'Should add a Once_Loaded function to the extended observable', ->
         target = ko.fireObservable false, {}
 
+        console.log target
+
         expect _.isFunction target.Once_Loaded 
           .toBeTruthy()
       return    

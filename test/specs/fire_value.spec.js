@@ -28,6 +28,7 @@
         it('Should add a Once_Loaded function to the extended observable', function() {
           var target;
           target = ko.fireObservable(false, {});
+          console.log(target);
           return expect(_.isFunction(target.Once_Loaded)).toBeTruthy();
         });
       });
