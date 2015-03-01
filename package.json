@@ -1,6 +1,6 @@
 {
   "name": "knockout-firebase",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Knockout tools for using Firebase as its DB",
   "dependencies": {},
   "devDependencies": {
@@ -18,7 +18,8 @@
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-exec": "~0.4.6",
-    "grunt-contrib-requirejs": "~0.4.4"
+    "grunt-contrib-requirejs": "~0.4.4",
+    "grunt-bump": "~0.3.0"
   },
   "scripts": {
     "test": "grunt test"
