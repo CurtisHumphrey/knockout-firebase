@@ -88,6 +88,12 @@ module.exports = (grunt) ->
         options:
           livereload: 35729
 
+    bump:
+      options:
+        files: ['bower.json', 'package.json']
+        commitFiles: ['bower.json', 'package.json']
+        push: false
+
   require('time-grunt')(grunt)
 
   require('load-grunt-tasks')(grunt)
