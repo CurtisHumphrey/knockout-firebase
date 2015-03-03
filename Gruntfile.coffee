@@ -76,7 +76,7 @@ module.exports = (grunt) ->
           reload: true
       reload_jasmine:
         files: ['test/specs/**/*.js','dev/**/*.js']
-        tasks: ['jasmine:dev', 'copy']
+        tasks: ['jasmine:dev', 'requirejs', 'copy']
         options:
           livereload: 1337
       coffee_spec:
