@@ -28,7 +28,6 @@
         it('Should add a Once_Loaded function to the extended observable', function() {
           var target;
           target = ko.fireObservable(false, {});
-          console.log(target);
           return expect(_.isFunction(target.Once_Loaded)).toBeTruthy();
         });
       });
@@ -225,9 +224,7 @@
             return expect(target()).toEqual("next");
           });
           return it('Should be able to go from value to null from target', function() {
-            console.log(fire_ref.getData());
             target(null);
-            console.log(fire_ref.getData());
             expect(fire_ref.child('key').getData()).toBeNull();
             return expect(target()).toBeNull();
           });

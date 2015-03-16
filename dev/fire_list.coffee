@@ -143,6 +143,7 @@ define (require) ->
       list_snapshot.forEach (child_snapshot) ->
         new_list.push self.Fire_Add_Make child_snapshot
         last_key = child_snapshot.key()
+      @target new_list #must be before watches
 
       @_fire_subs.push
         type: 'child_removed'
@@ -161,11 +162,10 @@ define (require) ->
         type: 'child_changed'
         fn: @fire_ref.on 'child_changed', @Fire_Changed, @Fire_Error, @
 
-      @target new_list
+      return
 
   ko.extenders.fireList = (target, options) ->
     fire_list = new Fire_List(target, options)
-    console.log fire_list
     return fire_list.Create_New_Target()
 
   ko.fireList = (options) ->

@@ -169,6 +169,7 @@
           new_list.push(self.Fire_Add_Make(child_snapshot));
           return last_key = child_snapshot.key();
         });
+        this.target(new_list);
         this._fire_subs.push({
           type: 'child_removed',
           fn: this.fire_ref.on('child_removed', this.Fire_Remove, this.Fire_Error, this)
@@ -186,7 +187,6 @@
           type: 'child_changed',
           fn: this.fire_ref.on('child_changed', this.Fire_Changed, this.Fire_Error, this)
         });
-        return this.target(new_list);
       };
 
       return Fire_List;
@@ -195,7 +195,6 @@
     ko.extenders.fireList = function(target, options) {
       var fire_list;
       fire_list = new Fire_List(target, options);
-      console.log(fire_list);
       return fire_list.Create_New_Target();
     };
     return ko.fireList = function(options) {

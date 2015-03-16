@@ -80,6 +80,24 @@ define (require) ->
 
           expect(target()[2].type()).toEqual 'pears'
 
+        it 'Should notify watchers', ->
+          watcher = ko.computed ->
+            result = []
+            for model in target()
+              result.push model
+            return result
+
+          console.log watcher()
+
+          fire_ref.child('fruit').push 
+            type: 'pears'
+            count: 11
+
+          console.log watcher()
+          
+          expect(watcher().length).toEqual 3
+
+
         it 'Should update value when firebase changes', ->
           last_ref.set 
             type: 'grapes'

@@ -69,6 +69,26 @@
             });
             return expect(target()[2].type()).toEqual('pears');
           });
+          it('Should notify watchers', function() {
+            var watcher;
+            watcher = ko.computed(function() {
+              var model, result, _i, _len, _ref;
+              result = [];
+              _ref = target();
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                model = _ref[_i];
+                result.push(model);
+              }
+              return result;
+            });
+            console.log(watcher());
+            fire_ref.child('fruit').push({
+              type: 'pears',
+              count: 11
+            });
+            console.log(watcher());
+            return expect(watcher().length).toEqual(3);
+          });
           it('Should update value when firebase changes', function() {
             last_ref.set({
               type: 'grapes',
