@@ -84,7 +84,7 @@ define (require) ->
     _Fire_Changed: (snapshot, model_obj, index) ->
       for key of @keys_inits
         value = snapshot.child(key).val()
-        if value is null and @target() isnt null
+        if value is null and (@target() isnt null and @target() isnt undefined)
           model_obj[key] model_obj[key]() #write back
         else if value isnt null
           model_obj[key].write_locally value

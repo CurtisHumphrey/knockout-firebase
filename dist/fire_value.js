@@ -46,9 +46,7 @@
         var callback, value, write_back, _i, _len, _ref;
         write_back = false;
         value = snapshot.val();
-        if (value === null && this.target() === null) {
-
-        } else if (value === null && !this.read_only) {
+        if (value === null && (this.target() !== null || this.target() !== void 0) && !this.read_only) {
           value = this.target();
           write_back = true;
         } else {

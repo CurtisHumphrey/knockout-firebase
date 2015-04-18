@@ -42,9 +42,7 @@ define (require) ->
       #this is a observable
       write_back = false
       value = snapshot.val()
-      if value is null and @target() is null
-        #do nothing
-      else if value is null and not this.read_only
+      if value is null and (@target() isnt null or @target() isnt undefined) and not this.read_only
         #write back the default value
         value = @target()
         write_back = true

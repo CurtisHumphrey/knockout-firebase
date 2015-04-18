@@ -95,7 +95,7 @@
         var key, value;
         for (key in this.keys_inits) {
           value = snapshot.child(key).val();
-          if (value === null && this.target() !== null) {
+          if (value === null && (this.target() !== null && this.target() !== void 0)) {
             model_obj[key](model_obj[key]());
           } else if (value !== null) {
             model_obj[key].write_locally(value);
@@ -255,9 +255,7 @@
         var callback, value, write_back, _i, _len, _ref;
         write_back = false;
         value = snapshot.val();
-        if (value === null && this.target() === null) {
-
-        } else if (value === null && !this.read_only) {
+        if (value === null && (this.target() !== null || this.target() !== void 0) && !this.read_only) {
           value = this.target();
           write_back = true;
         } else {

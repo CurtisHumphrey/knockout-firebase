@@ -95,7 +95,7 @@
         var key, value;
         for (key in this.keys_inits) {
           value = snapshot.child(key).val();
-          if (value === null && this.target() !== null) {
+          if (value === null && (this.target() !== null && this.target() !== void 0)) {
             model_obj[key](model_obj[key]());
           } else if (value !== null) {
             model_obj[key].write_locally(value);
