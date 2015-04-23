@@ -1,6 +1,6 @@
 {
   "name": "knockout-firebase",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Knockout tools for using Firebase as its DB",
   "dependencies": {},
   "devDependencies": {
