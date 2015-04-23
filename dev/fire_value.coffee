@@ -42,7 +42,7 @@ define (require) ->
       #this is a observable
       write_back = false
       value = snapshot.val()
-      if value is null and (@target() isnt null or @target() isnt undefined) and not this.read_only
+      if value is null and (@target() isnt null or @target() isnt undefined) and not @read_only
         #write back the default value
         value = @target()
         write_back = true
@@ -77,6 +77,11 @@ define (require) ->
     Fire_Error: (error) ->
       console.log error
 
+    Fire_Write_Callback: (error) => #need bacause of Firebase.set
+      return unless error
+      @Fire_Error error
+      @read_only = true #stops repeat write attemps
+
     Fire_Write: (value) ->
       #firebase undefined protection
       value = null if value is undefined
@@ -85,7 +90,7 @@ define (require) ->
           #else sync will take care of it 
           @target value 
 
-        @fire_ref.set value
+        @fire_ref.set value, @Fire_Write_Callback
       else
         @target value
 

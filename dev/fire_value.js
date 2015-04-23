@@ -9,6 +9,7 @@
         this.Once_Loaded = __bind(this.Once_Loaded, this);
         this.Get_Fire_Ref = __bind(this.Get_Fire_Ref, this);
         this.Change_Fire_Ref = __bind(this.Change_Fire_Ref, this);
+        this.Fire_Write_Callback = __bind(this.Fire_Write_Callback, this);
         var _ref, _ref1;
         this.read_only = (_ref = options.read_only) != null ? _ref : false;
         this.read_once = (_ref1 = options.read_once) != null ? _ref1 : false;
@@ -84,6 +85,14 @@
         return console.log(error);
       };
 
+      Fire_Value.prototype.Fire_Write_Callback = function(error) {
+        if (!error) {
+          return;
+        }
+        this.Fire_Error(error);
+        return this.read_only = true;
+      };
+
       Fire_Value.prototype.Fire_Write = function(value) {
         if (value === void 0) {
           value = null;
@@ -92,7 +101,7 @@
           if (this.read_once || value === null) {
             this.target(value);
           }
-          this.fire_ref.set(value);
+          this.fire_ref.set(value, this.Fire_Write_Callback);
         } else {
           this.target(value);
         }

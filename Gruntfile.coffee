@@ -100,7 +100,7 @@ module.exports = (grunt) ->
   
   grunt.registerTask 'git', ['exec:git']
 
-  grunt.registerTask 'next_version', ['bump:patch']
+  grunt.registerTask 'next_version', ['build','bump:patch']
   grunt.registerTask 'rerun', ['coffee', 'connect:dev:livereload', 'watch']
   grunt.registerTask 'dev', ['coffee', 'connect:dev:livereload', 'open', 'watch']
   grunt.registerTask 'build', ['coffee','jasmine','requirejs','copy']

@@ -5,6 +5,7 @@ define (require) ->
     constructor: (target, options) ->
       @fire_ref = options.fire_ref
       @keys_inits = options.keys_inits
+      @read_only = false #stops sets
       @target = target
 
       @target._class = @
@@ -35,6 +36,11 @@ define (require) ->
     Fire_Error: (error) ->
       console.log error
 
+    Fire_Write_Callback: (error) => #need bacause of Firebase.set
+      return unless error
+      @Fire_Error error
+      @read_only = true #stops repeat write attemps
+
     Fire_Add_Make: (snapshot) ->
       model_obj = {}
       model_obj._key = snapshot.key()
@@ -50,7 +56,7 @@ define (require) ->
           read: real_ko
           write: (value) ->
             value = null if value is undefined
-            fire_ref.child(key).set value
+            fire_ref.child(key).set value, @Fire_Write_Callback
             return value
         item.write_locally = real_ko
 
@@ -84,7 +90,7 @@ define (require) ->
     _Fire_Changed: (snapshot, model_obj, index) ->
       for key of @keys_inits
         value = snapshot.child(key).val()
-        if value is null and (@target() isnt null and @target() isnt undefined)
+        if value is null and (@target() isnt null and @target() isnt undefined) and not @read_only
           model_obj[key] model_obj[key]() #write back
         else if value isnt null
           model_obj[key].write_locally value

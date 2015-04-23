@@ -1,12 +1,16 @@
 (function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   define(function(require) {
     var Fire_List, ko;
     ko = require('knockout');
     Fire_List = (function() {
       function Fire_List(target, options) {
+        this.Fire_Write_Callback = __bind(this.Fire_Write_Callback, this);
         var method, _i, _len, _ref;
         this.fire_ref = options.fire_ref;
         this.keys_inits = options.keys_inits;
+        this.read_only = false;
         this.target = target;
         this.target._class = this;
         this._fire_subs = [];
@@ -34,6 +38,14 @@
         return console.log(error);
       };
 
+      Fire_List.prototype.Fire_Write_Callback = function(error) {
+        if (!error) {
+          return;
+        }
+        this.Fire_Error(error);
+        return this.read_only = true;
+      };
+
       Fire_List.prototype.Fire_Add_Make = function(snapshot) {
         var fire_ref, init, item, key, model_obj, real_ko, val, _ref;
         model_obj = {};
@@ -50,7 +62,7 @@
               if (value === void 0) {
                 value = null;
               }
-              fire_ref.child(key).set(value);
+              fire_ref.child(key).set(value, this.Fire_Write_Callback);
               return value;
             }
           });
@@ -95,7 +107,7 @@
         var key, value;
         for (key in this.keys_inits) {
           value = snapshot.child(key).val();
-          if (value === null && (this.target() !== null && this.target() !== void 0)) {
+          if (value === null && (this.target() !== null && this.target() !== void 0) && !this.read_only) {
             model_obj[key](model_obj[key]());
           } else if (value !== null) {
             model_obj[key].write_locally(value);
