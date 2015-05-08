@@ -97,14 +97,16 @@ define (require) ->
       return value
 
     # attached to new target
-    Change_Fire_Ref: (fire_ref, callback) =>
+    Change_Fire_Ref: (fire_ref, default_value, callback) =>
       if fire_ref
         @_once_loaded.push callback if callback
         @fire_ref = fire_ref
+        @target default_value if default_value
         @Fire_Sync()
       else
         @Fire_Off()
         @fire_ref = false
+        @target default_value if default_value
 
       return
 

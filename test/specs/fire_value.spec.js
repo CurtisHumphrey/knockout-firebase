@@ -93,7 +93,7 @@
         });
         return it('Should call back after a Fire_Ref change', function() {
           fire_ref.flush();
-          target.Change_Fire_Ref(fire_ref.child('key2'), obj.callback);
+          target.Change_Fire_Ref(fire_ref.child('key2'), '', obj.callback);
           expect(obj.callback).not.toHaveBeenCalled();
           fire_ref.flush();
           return expect(obj.callback).toHaveBeenCalledWith("different");
@@ -107,7 +107,8 @@
           fire_ref = new MockFirebase('testing://');
           fire_ref.autoFlush();
           return fire_ref.set({
-            key: "test"
+            key: "test",
+            key3: "different"
           });
         });
         describe('Only Reading Once', function() {
@@ -207,8 +208,13 @@
           it('Should not reset the initial value if the firebase has no record', function() {
             return expect(target()).toEqual("starting value");
           });
-          return it('Should update firebase with the inital value if firebase has no record', function() {
+          it('Should update firebase with the inital value if firebase has no record', function() {
             return expect(fire_ref.child('key2').getData()).toEqual("starting value");
+          });
+          return it('Should update firebase with the inital value if firebase has no record upon ref change', function() {
+            target.Change_Fire_Ref(fire_ref.child('key4'), 'default');
+            expect(fire_ref.child('key2').getData()).toEqual("starting value");
+            return expect(fire_ref.child('key4').getData()).toEqual("default");
           });
         });
         return describe('Handling non-happy paths', function() {

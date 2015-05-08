@@ -112,7 +112,7 @@ define (require) ->
       it 'Should call back after a Fire_Ref change', ->
         fire_ref.flush()
 
-        target.Change_Fire_Ref fire_ref.child('key2'), obj.callback
+        target.Change_Fire_Ref fire_ref.child('key2'), '', obj.callback
 
         expect(obj.callback).not.toHaveBeenCalled()
 
@@ -131,6 +131,7 @@ define (require) ->
 
         fire_ref.set
           key: "test"
+          key3: "different"
 
       describe 'Only Reading Once', ->
         beforeEach ->
@@ -228,7 +229,12 @@ define (require) ->
 
         it 'Should update firebase with the inital value if firebase has no record', ->
           expect(fire_ref.child('key2').getData()).toEqual "starting value"
-        
+
+        it 'Should update firebase with the inital value if firebase has no record upon ref change', ->
+          target.Change_Fire_Ref fire_ref.child('key4'), 'default'
+
+          expect(fire_ref.child('key2').getData()).toEqual "starting value"
+          expect(fire_ref.child('key4').getData()).toEqual "default"    
 
       describe 'Handling non-happy paths', ->
         beforeEach ->

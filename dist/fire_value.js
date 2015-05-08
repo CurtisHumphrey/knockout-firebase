@@ -108,16 +108,22 @@
         return value;
       };
 
-      Fire_Value.prototype.Change_Fire_Ref = function(fire_ref, callback) {
+      Fire_Value.prototype.Change_Fire_Ref = function(fire_ref, default_value, callback) {
         if (fire_ref) {
           if (callback) {
             this._once_loaded.push(callback);
           }
           this.fire_ref = fire_ref;
+          if (default_value) {
+            this.target(default_value);
+          }
           this.Fire_Sync();
         } else {
           this.Fire_Off();
           this.fire_ref = false;
+          if (default_value) {
+            this.target(default_value);
+          }
         }
       };
 
