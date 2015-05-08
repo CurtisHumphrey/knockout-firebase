@@ -14,7 +14,7 @@ Knockout tools for using Firebase as its DB, inspired by [FireBind by tyrsius](h
  8. Sync can be read-once or continue reading (for 1,2,4,5 done)
 
 # Tests
-There are 81 test currently
+There are 82 test currently
 
 # Usage
 This package is designed to be used with a requirejs type project. Include the dist/knockout-firebase file to get all the components
@@ -84,10 +84,10 @@ my_value = ko.observable('inital_value').extend({
 1. ko.fireValue is an alias for ko.fireObservable
 2. read_only if not provided defaults to false
 3. read_once if not provided defaults to false
-4. fire_ref can be provided (or changed) later via 
+4. fire_ref can be provided (or changed) later with an optional callback via 
 ``` coffeescript
 # via coffeescript
-my_value.Change_Fire_Ref new Firebase('path')
+my_value.Change_Fire_Ref new Firebase('path'), callback
 ```
 5. undefineds are auto replace with null to protect firebase
 6. if read_only is true, one can still write to the observable but it will not write to firebase

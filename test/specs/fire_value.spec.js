@@ -66,7 +66,8 @@
         beforeEach(function() {
           fire_ref = new MockFirebase('testing://');
           fire_ref.set({
-            key: "test"
+            key: "test",
+            key2: "different"
           });
           fire_ref.flush();
           obj = {
@@ -85,10 +86,17 @@
           fire_ref.flush();
           return expect(obj.callback).toHaveBeenCalledWith("test");
         });
-        return it('Should call back right way if the values are already loaded', function() {
+        it('Should call back right way if the values are already loaded', function() {
           fire_ref.flush();
           target.Once_Loaded(obj.callback);
           return expect(obj.callback).toHaveBeenCalledWith("test");
+        });
+        return it('Should call back after a Fire_Ref change', function() {
+          fire_ref.flush();
+          target.Change_Fire_Ref(fire_ref.child('key2'), obj.callback);
+          expect(obj.callback).not.toHaveBeenCalled();
+          fire_ref.flush();
+          return expect(obj.callback).toHaveBeenCalledWith("different");
         });
       });
       return describe('Working with a fire_ref', function() {

@@ -78,6 +78,8 @@ define (require) ->
         fire_ref = new MockFirebase('testing://')
         fire_ref.set
           key: "test"
+          key2: "different"
+
 
         fire_ref.flush()
 
@@ -106,6 +108,18 @@ define (require) ->
         target.Once_Loaded obj.callback
 
         expect(obj.callback).toHaveBeenCalledWith "test"
+
+      it 'Should call back after a Fire_Ref change', ->
+        fire_ref.flush()
+
+        target.Change_Fire_Ref fire_ref.child('key2'), obj.callback
+
+        expect(obj.callback).not.toHaveBeenCalled()
+
+        fire_ref.flush()
+
+        expect(obj.callback).toHaveBeenCalledWith "different"
+
 
     describe 'Working with a fire_ref', ->
       target = null

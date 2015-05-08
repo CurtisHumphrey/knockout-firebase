@@ -97,8 +97,9 @@ define (require) ->
       return value
 
     # attached to new target
-    Change_Fire_Ref: (fire_ref) =>
+    Change_Fire_Ref: (fire_ref, callback) =>
       if fire_ref
+        @_once_loaded.push callback if callback
         @fire_ref = fire_ref
         @Fire_Sync()
       else
