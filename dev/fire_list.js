@@ -7,6 +7,7 @@
     Fire_List = (function() {
       function Fire_List(target, options) {
         this.Fire_Write_Callback = __bind(this.Fire_Write_Callback, this);
+        this.Fire_Change_Ref = __bind(this.Fire_Change_Ref, this);
         var method, _i, _len, _ref;
         this.fire_ref = options.fire_ref;
         this.keys_inits = options.keys_inits;
@@ -15,6 +16,7 @@
         this.target._class = this;
         this._fire_subs = [];
         this.target.dispose = this.Fire_Dispose;
+        this.target.Change_Fire_Ref = this.Fire_Change_Ref;
         this._push = this.target.push;
         this.target.push = this.Ko_Push;
         this.target.remove = this.Ko_Remove;
@@ -27,7 +29,7 @@
           method = _ref[_i];
           this.target[method] = this.Ko_No_Supported;
         }
-        this.fire_ref.once("value", this.Fire_Load, this.Fire_Error, this);
+        this.Fire_Change_Ref(this.fire_ref);
       }
 
       Fire_List.prototype.Create_New_Target = function() {
@@ -36,6 +38,23 @@
 
       Fire_List.prototype.Fire_Error = function(error) {
         return console.log(error);
+      };
+
+      Fire_List.prototype.Fire_Change_Ref = function(fire_ref) {
+        var fire_sub, _i, _len, _ref;
+        _ref = this._fire_subs;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          fire_sub = _ref[_i];
+          this.fire_ref.off(fire_sub.type, fire_sub.fn, this.target);
+        }
+        this._fire_subs = [];
+        this.target([]);
+        if (fire_ref) {
+          this.fire_ref = fire_ref;
+          return this.fire_ref.once("value", this.Fire_Load, this.Fire_Error, this);
+        } else {
+          return this.fire_ref = false;
+        }
       };
 
       Fire_List.prototype.Fire_Write_Callback = function(error) {
@@ -132,12 +151,16 @@
         _ref = this._class._fire_subs;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           fire_sub = _ref[_i];
-          this._class.fire_ref.off(fire_sub.type, fire_sub.fn, this);
+          this._class.fire_ref.off(fire_sub.type, fire_sub.fn, this._class);
         }
         this._class = void 0;
       };
 
       Fire_List.prototype.Ko_Push = function(item) {
+        if (!this._class.fire_ref) {
+          throw new Error("pushed without a fire_ref set");
+          return;
+        }
         return this._class.fire_ref.push(ko.toJS(item));
       };
 
@@ -152,6 +175,10 @@
 
       Fire_List.prototype.Ko_Splice = function(index, count) {
         var i, list, _i, _ref;
+        if (!this._class.fire_ref) {
+          throw new Error("spliced without a fire_ref set");
+          return;
+        }
         list = this.peek();
         for (i = _i = index, _ref = index + count - 1; index <= _ref ? _i <= _ref : _i >= _ref; i = index <= _ref ? ++_i : --_i) {
           if (list[i]) {

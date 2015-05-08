@@ -14,7 +14,7 @@ Knockout tools for using Firebase as its DB, inspired by [FireBind by tyrsius](h
  8. Sync can be read-once or continue reading (for 1,2,4,5 done)
 
 # Tests
-There are 76 test currently
+There are 81 test currently
 
 # Usage
 This package is designed to be used with a requirejs type project. Include the dist/knockout-firebase file to get all the components
@@ -26,10 +26,10 @@ This package is designed to be used with a requirejs type project. Include the d
 ## Install
 via ```bower install knockout-firebase```
 
-## Using Fire Value
+# Using Fire Value
 Fire value is a observable linked to a firebase path.
 
-### Setup Version 1
+## Setup Version 1
 via coffeescript:
 ``` coffeescript
 Firebase = require 'firebase'
@@ -54,7 +54,7 @@ my_value = ko.fireObservable('inital_value', {
   fire_ref: new Firebase('path')
 });
 ```
-### Setup Version 2
+## Setup Version 2
 via coffeescript:
 ``` coffeescript
 Firebase = require 'firebase'
@@ -80,7 +80,7 @@ my_value = ko.observable('inital_value').extend({
   fire_ref: new Firebase('path')
 });
 ```
-### Options & Notes
+## Options & Notes
 1. ko.fireValue is an alias for ko.fireObservable
 2. read_only if not provided defaults to false
 3. read_once if not provided defaults to false
@@ -94,14 +94,14 @@ my_value.Change_Fire_Ref new Firebase('path')
 7. if read_only is false and firebase has no value (i.e., is null) the inital value will be written to that location
 8. Use the dispose() function to make sure memory is cleaned up when removing a fireValue
 
-### Additional APIs
+## Additional APIs
 1. the observable has a Once_Loaded(callback) function that will call the callback provided once the value has been loaded (like a simple promise)
 2. Get_Fire_Ref() will return the firebase refrence object
 
-## Using Fire Model
+# Using Fire Model
 Fire model add fireValues to an object
 
-### Setup Verion 1
+## Setup Verion 1
 via coffeescript:
 ``` coffeescript
 Firebase = require 'firebase'
@@ -139,7 +139,7 @@ ko.fireModel(my_values, keys_and_defaults, {
 });
 ```
 
-### Setup Version 2
+## Setup Version 2
 via coffeescript:
 ``` coffeescript
 Firebase = require 'firebase'
@@ -174,7 +174,7 @@ ko.fireModel(my_values, my_values, {
 });
 ```
 
-### Options & Notes
+## Options & Notes
 1. first input is the object to attach the fireValues onto
 2. first input is NOT optional but can be {} as fireModel returns the object back
 3. first input can already have elements on it and fireModel will not overwrite them but use the observables
@@ -204,7 +204,7 @@ ko.fireModel my_values, {oranges: null},
   fire_ref: new Firebase('path/citrus')
 ```
 
-## Using Fire List
+# Using Fire List
 Fire list extends observableArray to support default ordered firebase lists. Default order is no prority by key which is timestamp or creation order.
 
 ### Setup
@@ -237,8 +237,12 @@ list = ko.fireList({
 });
 ```
 
-### Options & Notes
-1. fire_ref is not optional
+## Options & Notes
+1. fire_ref can be provided (or changed) later via 
+``` coffeescript
+# via coffeescript
+my_value.Change_Fire_Ref new Firebase('path')
+```
 2. keys_inits is an object of firebase keys and default values
 3. Unlike fireModel the defaults are not written back if the firebase values are null
 4. One can also extend an observableArray with extend: {fireList: options}
@@ -247,15 +251,15 @@ list = ko.fireList({
 7. dispose() works and will remove any firebase listners
 8. unlike fireValue and fireModel there is not any options for read_only or read_once
 
-### Additional APIs
+## Additional APIs
 1. push, remove, splice, and shift all work
 2. unshift, reverse, sort, removeAll, destroy, destroyAll do NOT work
 
 
-## Using Fire Value by Refrence
+# Using Fire Value by Refrence
 Fire Value that switchs firebase paths based on an observable
 
-### Setup
+## Setup
 via coffeescript:
 ``` coffeescript
 Firebase = require 'firebase'
@@ -288,7 +292,7 @@ my_value = ko.fireValueByRef('inital_value', {
 });
 ```
 
-### Options & Notes
+## Options & Notes
 1. just like FireValue expect fire_ref and ref_obs_id are not optional
 2. if ref_obs_id() is null or undefined it will disconnect from firebase
 3. the path of the value is fire_ref + ref_obs_id() + child
@@ -296,10 +300,10 @@ my_value = ko.fireValueByRef('inital_value', {
 5. every time ref_obs_id changes it will re-read the value from firebase (even if read_once is true)
 6. fireValueByRef return a fireValue object
 
-## Using Fire Model by Refrence
+# Using Fire Model by Refrence
 Fire Model that switchs firebase paths based on an observable
 
-### Setup
+## Setup
 via coffeescript:
 ``` coffeescript
 Firebase = require 'firebase'
@@ -342,7 +346,7 @@ ko.fireModelByRef(my_values, my_values, {
 });
 ```
 
-### Options & Notes
+## Options & Notes
 1. just like FireModel expect ref_obs_id is added and not optional
 2. if ref_obs_id() is null or undefined it will disconnect from firebase
 3. the path of the value is fire_ref + ref_obs_id() + child + keys

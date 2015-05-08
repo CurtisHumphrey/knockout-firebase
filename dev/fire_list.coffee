@@ -13,6 +13,7 @@ define (require) ->
       @_fire_subs = []
 
       @target.dispose = @Fire_Dispose
+      @target.Change_Fire_Ref = @Fire_Change_Ref
 
       @_push = @target.push
       @target.push = @Ko_Push
@@ -28,13 +29,30 @@ define (require) ->
       for method in ['unshift','reverse','sort','removeAll','destroy','destroyAll']
         @target[method] = @Ko_No_Supported
 
-      @fire_ref.once "value", @Fire_Load, @Fire_Error, @
+      @Fire_Change_Ref @fire_ref
 
     Create_New_Target: () ->
       return @target
 
     Fire_Error: (error) ->
       console.log error
+
+    Fire_Change_Ref: (fire_ref) =>
+      #in context of class
+
+      #flush
+      for fire_sub in @_fire_subs
+        @fire_ref.off fire_sub.type, fire_sub.fn, @target
+      @_fire_subs = []
+      @target [] #empty array
+
+      #re-hook
+      if fire_ref
+        @fire_ref = fire_ref
+        @fire_ref.once "value", @Fire_Load, @Fire_Error, @
+      else
+        @fire_ref = false
+
 
     Fire_Write_Callback: (error) => #need bacause of Firebase.set
       return unless error
@@ -108,12 +126,15 @@ define (require) ->
     Fire_Dispose: () ->
       #in target context
       for fire_sub in @_class._fire_subs
-        @_class.fire_ref.off fire_sub.type, fire_sub.fn, @
+        @_class.fire_ref.off fire_sub.type, fire_sub.fn, @_class
       @_class = undefined
       return
 
     Ko_Push: (item) ->
       #in target context
+      unless @_class.fire_ref
+        throw new Error "pushed without a fire_ref set"
+        return
       @_class.fire_ref.push ko.toJS item
 
     Ko_Remove: (item) ->
@@ -124,6 +145,10 @@ define (require) ->
 
     Ko_Splice: (index, count) ->
       #in target context
+      unless @_class.fire_ref
+        throw new Error "spliced without a fire_ref set"
+        return
+
       list = @peek()
       for i in [index..index+count-1]
         if list[i]
@@ -142,6 +167,7 @@ define (require) ->
       throw new Error('ko method called is not currently implemented for fire lists')
 
     Fire_Load: (list_snapshot) ->
+      #in contact of class
       new_list = []
       last_key = null
 

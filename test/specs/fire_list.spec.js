@@ -15,6 +15,15 @@
         it('Should add a knockout function "fireList" function', function() {
           return expect(_.isFunction(ko.fireList)).toBeTruthy();
         });
+        it('Should add a Change_Fire_Ref function to the extended observable', function() {
+          var fire_ref, target;
+          fire_ref = new MockFirebase('testing://');
+          fire_ref.autoFlush();
+          target = ko.fireList({
+            fire_ref: fire_ref
+          });
+          return expect(_.isFunction(target.Change_Fire_Ref)).toBeTruthy();
+        });
         it('Should add a dispose function to the extended observable', function() {
           var fire_ref, target;
           fire_ref = new MockFirebase('testing://');
@@ -23,6 +32,24 @@
             fire_ref: fire_ref
           });
           return expect(_.isFunction(target.dispose)).toBeTruthy();
+        });
+      });
+      describe('defaults with no fire_ref', function() {
+        var target;
+        target = null;
+        beforeEach(function() {
+          return target = ko.fireList({
+            keys_inits: {
+              type: null,
+              count: 0
+            }
+          });
+        });
+        it('Should have the initial value', function() {
+          return expect(target()).toEqual([]);
+        });
+        it('Should have an internal fire_ref of false', function() {
+          return expect(target._class.fire_ref).toEqual(false);
         });
       });
       describe('Working with a fire_ref', function() {
@@ -51,6 +78,21 @@
         });
         describe('Reading from firebase', function() {
           beforeEach(function() {});
+          it('Should be able to switch references', function() {
+            fire_ref.child('fruit2').push({
+              type: 'grapes',
+              count: 1
+            });
+            last_ref = fire_ref.child('fruit2').push({
+              type: 'kiwi',
+              count: 6
+            });
+            target.Change_Fire_Ref(fire_ref.child('fruit2'));
+            expect(target()[0].type()).toBe('grapes');
+            expect(target()[0].count()).toBe(1);
+            expect(target()[1].type()).toBe('kiwi');
+            return expect(target()[1].count()).toBe(6);
+          });
           it('Should load the 2 values from the firebase', function() {
             return expect(target().length).toEqual(2);
           });

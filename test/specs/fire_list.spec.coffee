@@ -21,6 +21,16 @@ define (require) ->
         expect _.isFunction ko.fireList 
           .toBeTruthy()
 
+      it 'Should add a Change_Fire_Ref function to the extended observable', ->
+        fire_ref = new MockFirebase('testing://')
+        fire_ref.autoFlush()
+
+        target = ko.fireList
+          fire_ref: fire_ref
+
+        expect _.isFunction target.Change_Fire_Ref 
+          .toBeTruthy()
+
       it 'Should add a dispose function to the extended observable', ->
         fire_ref = new MockFirebase('testing://')
         fire_ref.autoFlush()
@@ -31,6 +41,22 @@ define (require) ->
         expect _.isFunction target.dispose 
           .toBeTruthy()
       return    
+
+    describe 'defaults with no fire_ref', ->
+      target = null
+      beforeEach ->
+        target = ko.fireList
+          keys_inits:
+            type: null
+            count: 0
+
+      it 'Should have the initial value', ->
+        expect(target()).toEqual []
+
+      it 'Should have an internal fire_ref of false', ->
+        expect(target._class.fire_ref).toEqual false
+
+      return
 
     describe 'Working with a fire_ref', ->
       target = null
@@ -57,6 +83,27 @@ define (require) ->
         
       describe 'Reading from firebase', ->
         beforeEach ->
+
+
+        it 'Should be able to switch references', ->
+          fire_ref.child('fruit2').push 
+            type: 'grapes'
+            count: 1
+          last_ref = fire_ref.child('fruit2').push 
+            type: 'kiwi'
+            count: 6
+
+          target.Change_Fire_Ref fire_ref.child('fruit2')
+          
+          expect target()[0].type()
+            .toBe 'grapes'
+          expect target()[0].count()
+            .toBe 1
+          expect target()[1].type()
+            .toBe 'kiwi'
+          expect target()[1].count()
+            .toBe 6
+
 
         it 'Should load the 2 values from the firebase', ->
           expect(target().length).toEqual 2
