@@ -230,11 +230,46 @@ define (require) ->
         it 'Should update firebase with the inital value if firebase has no record', ->
           expect(fire_ref.child('key2').getData()).toEqual "starting value"
 
+      describe 'Interactions with Change_Fire_Ref', ->
+        beforeEach ->
+          target = ko.fireObservable "starting value", 
+            fire_ref: fire_ref.child 'key2'
+
         it 'Should update firebase with the inital value if firebase has no record upon ref change', ->
           target.Change_Fire_Ref fire_ref.child('key4'), 'default'
 
           expect(fire_ref.child('key2').getData()).toEqual "starting value"
-          expect(fire_ref.child('key4').getData()).toEqual "default"    
+          expect(fire_ref.child('key4').getData()).toEqual "default"
+
+        it 'Should not alter data linked before the switch', ->
+          target.Change_Fire_Ref fire_ref.child('key4'), []
+
+          expect(fire_ref.child('key2').getData()).toEqual "starting value"
+          expect(fire_ref.child('key4').getData()).toEqual null
+          expect(target()).toEqual []
+
+          target [1, 2]
+
+          expect(fire_ref.child('key2').getData()).toEqual "starting value"
+          expect(_.values fire_ref.child('key4').getData()).toEqual [1, 2]
+
+
+          target.Change_Fire_Ref fire_ref.child('key2'), []
+
+          expect(fire_ref.child('key2').getData()).toEqual "starting value"
+          expect(_.values fire_ref.child('key4').getData()).toEqual [1, 2]
+          expect(target()).toEqual "starting value"
+
+        it 'Should allow callback to change the value in DB', ->
+          callback = () ->
+            target 'callback'
+
+          expect(fire_ref.child('key3').getData()).toEqual "different"
+
+          target.Change_Fire_Ref fire_ref.child('key3'), '', callback
+
+          expect(fire_ref.child('key3').getData()).toEqual "callback"
+          expect(target()).toEqual "callback"
 
       describe 'Handling non-happy paths', ->
         beforeEach ->

@@ -14,7 +14,7 @@ Knockout tools for using Firebase as its DB, inspired by [FireBind by tyrsius](h
  8. Sync can be read-once or continue reading (for 1,2,4,5 done)
 
 # Tests
-There are 82 test currently
+There are 85 test currently
 
 # Usage
 This package is designed to be used with a requirejs type project. Include the dist/knockout-firebase file to get all the components

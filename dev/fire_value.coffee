@@ -49,12 +49,11 @@ define (require) ->
       else
         @target value
 
-      callback value for callback in @_once_loaded
-      @_once_loaded.length = 0
       @_has_loaded = true
-
       @Fire_Write value if write_back
 
+      callback value for callback in @_once_loaded
+      @_once_loaded.length = 0
 
     Fire_Off: () ->
       if @fire_ref and @fire_sync_on
@@ -101,12 +100,12 @@ define (require) ->
       if fire_ref
         @_once_loaded.push callback if callback
         @fire_ref = fire_ref
-        @target default_value if default_value
+        @target default_value if default_value?
         @Fire_Sync()
       else
         @Fire_Off()
         @fire_ref = false
-        @target default_value if default_value
+        @target default_value if default_value?
 
       return
 

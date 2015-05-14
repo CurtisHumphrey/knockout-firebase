@@ -301,16 +301,16 @@
         } else {
           this.target(value);
         }
+        this._has_loaded = true;
+        if (write_back) {
+          this.Fire_Write(value);
+        }
         _ref = this._once_loaded;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           callback = _ref[_i];
           callback(value);
         }
-        this._once_loaded.length = 0;
-        this._has_loaded = true;
-        if (write_back) {
-          return this.Fire_Write(value);
-        }
+        return this._once_loaded.length = 0;
       };
 
       Fire_Value.prototype.Fire_Off = function() {
@@ -362,14 +362,14 @@
             this._once_loaded.push(callback);
           }
           this.fire_ref = fire_ref;
-          if (default_value) {
+          if (default_value != null) {
             this.target(default_value);
           }
           this.Fire_Sync();
         } else {
           this.Fire_Off();
           this.fire_ref = false;
-          if (default_value) {
+          if (default_value != null) {
             this.target(default_value);
           }
         }

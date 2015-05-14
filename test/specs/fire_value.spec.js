@@ -208,13 +208,43 @@
           it('Should not reset the initial value if the firebase has no record', function() {
             return expect(target()).toEqual("starting value");
           });
-          it('Should update firebase with the inital value if firebase has no record', function() {
+          return it('Should update firebase with the inital value if firebase has no record', function() {
             return expect(fire_ref.child('key2').getData()).toEqual("starting value");
           });
-          return it('Should update firebase with the inital value if firebase has no record upon ref change', function() {
+        });
+        describe('Interactions with Change_Fire_Ref', function() {
+          beforeEach(function() {
+            return target = ko.fireObservable("starting value", {
+              fire_ref: fire_ref.child('key2')
+            });
+          });
+          it('Should update firebase with the inital value if firebase has no record upon ref change', function() {
             target.Change_Fire_Ref(fire_ref.child('key4'), 'default');
             expect(fire_ref.child('key2').getData()).toEqual("starting value");
             return expect(fire_ref.child('key4').getData()).toEqual("default");
+          });
+          it('Should not alter data linked before the switch', function() {
+            target.Change_Fire_Ref(fire_ref.child('key4'), []);
+            expect(fire_ref.child('key2').getData()).toEqual("starting value");
+            expect(fire_ref.child('key4').getData()).toEqual(null);
+            expect(target()).toEqual([]);
+            target([1, 2]);
+            expect(fire_ref.child('key2').getData()).toEqual("starting value");
+            expect(_.values(fire_ref.child('key4').getData())).toEqual([1, 2]);
+            target.Change_Fire_Ref(fire_ref.child('key2'), []);
+            expect(fire_ref.child('key2').getData()).toEqual("starting value");
+            expect(_.values(fire_ref.child('key4').getData())).toEqual([1, 2]);
+            return expect(target()).toEqual("starting value");
+          });
+          return it('Should allow callback to change the value in DB', function() {
+            var callback;
+            callback = function() {
+              return target('callback');
+            };
+            expect(fire_ref.child('key3').getData()).toEqual("different");
+            target.Change_Fire_Ref(fire_ref.child('key3'), '', callback);
+            expect(fire_ref.child('key3').getData()).toEqual("callback");
+            return expect(target()).toEqual("callback");
           });
         });
         return describe('Handling non-happy paths', function() {

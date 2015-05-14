@@ -91,7 +91,8 @@
             expect(target()[0].type()).toBe('grapes');
             expect(target()[0].count()).toBe(1);
             expect(target()[1].type()).toBe('kiwi');
-            return expect(target()[1].count()).toBe(6);
+            expect(target()[1].count()).toBe(6);
+            return expect(_.values(fire_ref.child('fruit').getData()).length).toBe(2);
           });
           it('Should load the 2 values from the firebase', function() {
             return expect(target().length).toEqual(2);
@@ -123,12 +124,10 @@
               }
               return result;
             });
-            console.log(watcher());
             fire_ref.child('fruit').push({
               type: 'pears',
               count: 11
             });
-            console.log(watcher());
             return expect(watcher().length).toEqual(3);
           });
           it('Should update value when firebase changes', function() {
