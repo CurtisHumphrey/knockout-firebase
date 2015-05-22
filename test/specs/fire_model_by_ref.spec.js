@@ -111,7 +111,9 @@
             obs_id(null);
             model.apples(null);
             model.oranges(null);
-            return expect(fire_ref.child('user_1').getData()).toEqual(user_data);
+            expect(fire_ref.child('user_1').getData()).toEqual(user_data);
+            expect(model.apples.Get_Fire_Ref()).toBeFalsy();
+            return expect(model.oranges.Get_Fire_Ref()).toBeFalsy();
           });
         });
         return describe('Switching with a child_path', function() {

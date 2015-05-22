@@ -112,6 +112,9 @@ define (require) ->
           expect fire_ref.child('user_1').getData()
             .toEqual user_data
 
+          expect( model.apples.Get_Fire_Ref()).toBeFalsy()
+          expect( model.oranges.Get_Fire_Ref()).toBeFalsy()
+
       describe 'Switching with a child_path', ->
         beforeEach ->
           ko.fireModelByRef model, model,  

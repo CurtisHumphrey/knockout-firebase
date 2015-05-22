@@ -448,13 +448,13 @@
           target = model_obj[key];
           if (id == null) {
             target.Change_Fire_Ref(false);
-            break;
+          } else {
+            ref = fire_ref.child(id);
+            if (child_path) {
+              ref = ref.child(child_path);
+            }
+            target.Change_Fire_Ref(ref.child(key));
           }
-          ref = fire_ref.child(id);
-          if (child_path) {
-            ref = ref.child(child_path);
-          }
-          target.Change_Fire_Ref(ref.child(key));
         }
       };
       ref_obs_id.subscribe(id_changed);

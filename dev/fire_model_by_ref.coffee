@@ -15,11 +15,10 @@ define (require) ->
             target = model_obj[key]
             unless id?
                target.Change_Fire_Ref false 
-               break
-
-            ref = fire_ref.child(id)
-            ref = ref.child(child_path) if child_path
-            target.Change_Fire_Ref ref.child(key)
+            else
+               ref = fire_ref.child(id)
+               ref = ref.child(child_path) if child_path
+               target.Change_Fire_Ref ref.child(key)
          return
 
       ref_obs_id.subscribe id_changed
