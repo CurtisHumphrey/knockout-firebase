@@ -448,7 +448,7 @@
           target = model_obj[key];
           if (id == null) {
             target.Change_Fire_Ref(false);
-            return;
+            break;
           }
           ref = fire_ref.child(id);
           if (child_path) {

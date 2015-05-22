@@ -91,6 +91,27 @@ define (require) ->
           expect(model.apples()).toBeNull()
           expect(model.oranges()).toBeNull()
 
+      describe 'Switching to null (disconnect)', ->
+        beforeEach ->
+          obs_id = ko.observable 'user_1'
+
+          ko.fireModelByRef model, model, 
+            read_only: true
+            read_once: true
+            fire_ref: fire_ref
+            ref_obs_id: obs_id
+
+        it 'Should not allow values to be set', ->
+          user_data = fire_ref.child('user_1').getData()
+          console.log user_data
+
+          obs_id null
+          model.apples null
+          model.oranges null
+
+          expect fire_ref.child('user_1').getData()
+            .toEqual user_data
+
       describe 'Switching with a child_path', ->
         beforeEach ->
           ko.fireModelByRef model, model,  

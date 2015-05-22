@@ -15,7 +15,7 @@ define (require) ->
             target = model_obj[key]
             unless id?
                target.Change_Fire_Ref false 
-               return
+               break
 
             ref = fire_ref.child(id)
             ref = ref.child(child_path) if child_path
