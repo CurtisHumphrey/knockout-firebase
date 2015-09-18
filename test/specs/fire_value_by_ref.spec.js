@@ -24,7 +24,7 @@
         beforeEach(function() {
           fire_ref = new MockFirebase('testing://');
           fire_ref.autoFlush();
-          fire_ref.set({
+          return fire_ref.set({
             apples: 21,
             oranges: 22,
             fruit: {
@@ -36,10 +36,22 @@
               }
             }
           });
-          return obs_id = ko.observable();
+        });
+        describe('Setup with a filled out ref_obs_id', function() {
+          return it('Should pull the correct value and replace default', function() {
+            obs_id = ko.observable('apples');
+            target = ko.fireValueByRef(false, {
+              read_only: true,
+              read_once: true,
+              fire_ref: fire_ref,
+              ref_obs_id: obs_id
+            });
+            return expect(target()).toEqual(21);
+          });
         });
         describe('Switching without a child_path', function() {
           beforeEach(function() {
+            obs_id = ko.observable();
             return target = ko.fireValueByRef(false, {
               read_only: true,
               read_once: true,
@@ -67,6 +79,7 @@
         });
         return describe('Switching with a child_path', function() {
           beforeEach(function() {
+            obs_id = ko.observable();
             return target = ko.fireValueByRef(false, {
               read_only: true,
               read_once: true,

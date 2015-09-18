@@ -25,8 +25,8 @@
           }
         }
       };
-      ref_obs_id.subscribe(id_changed);
       id_changed(ref_obs_id());
+      ref_obs_id.subscribe(id_changed);
       return model_obj;
     };
   });

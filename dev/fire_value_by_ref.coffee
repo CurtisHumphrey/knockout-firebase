@@ -11,8 +11,7 @@ define (require) ->
       target = target.extend
          fireValue: options
 
-
-      ref_obs_id.subscribe (id) ->
+      id_changed = (id) ->
          unless id?
             target.Change_Fire_Ref false
             return
@@ -20,6 +19,9 @@ define (require) ->
          ref = fire_ref.child(id)
          ref = ref.child(child_path) if child_path
          target.Change_Fire_Ref ref
+
+      id_changed ref_obs_id()
+      ref_obs_id.subscribe id_changed
 
       return target
 

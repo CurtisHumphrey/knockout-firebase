@@ -41,10 +41,21 @@ define (require) ->
             oranges:
               count: 32
 
-        obs_id = ko.observable()
+      describe 'Setup with a filled out ref_obs_id', ->
+        it 'Should pull the correct value and replace default', ->
+          obs_id = ko.observable 'apples'
+          target = ko.fireValueByRef false, 
+            read_only: true
+            read_once: true
+            fire_ref: fire_ref
+            ref_obs_id: obs_id
+
+          expect(target()).toEqual 21 #apple value
+        
 
       describe 'Switching without a child_path', ->
         beforeEach ->
+          obs_id = ko.observable()
           target = ko.fireValueByRef false, 
             read_only: true
             read_once: true
@@ -71,6 +82,7 @@ define (require) ->
 
       describe 'Switching with a child_path', ->
         beforeEach ->
+          obs_id = ko.observable()
           target = ko.fireValueByRef false, 
             read_only: true
             read_once: true
