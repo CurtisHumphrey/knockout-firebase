@@ -62,9 +62,10 @@ require 'knockout-firebase'
 
 my_value = ko.observable 'inital_value'
 .extend
-  read_only: true
-  read_once: true
-  fire_ref: new Firebase('path')
+  fireValue:
+   read_only: true
+   read_once: true
+   fire_ref: new Firebase('path')
 ```
 via javascript:
 ``` javascript
@@ -75,10 +76,11 @@ Firebase = require('firebase');
 require('knockout-firebase');
 
 my_value = ko.observable('inital_value').extend({
-  read_only: true,
-  read_once: true,
-  fire_ref: new Firebase('path')
-});
+  fireValue: {
+   read_only: true,
+   read_once: true,
+   fire_ref: new Firebase('path')
+}});
 ```
 ## Options & Notes
 1. ko.fireValue is an alias for ko.fireObservable
