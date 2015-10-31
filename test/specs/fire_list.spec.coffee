@@ -7,7 +7,7 @@ define (require) ->
   MockFirebase = require('mockfirebase').MockFirebase
 
 
-  describe 'Fire List', ->
+  fdescribe 'Fire List', ->
 
     beforeEach ->
 
@@ -73,17 +73,37 @@ define (require) ->
         last_ref = fire_ref.child('fruit').push 
           type: 'oranges'
           count: 4
+        
+      describe 'Special keys', ->
+        firebase_data = null
+        beforeEach ->
+          fire_ref.child('fruit').once "value", (dataSnapshot) ->
+            firebase_data = dataSnapshot.val()
 
+          target = ko.fireList
+            fire_ref: fire_ref.child('fruit')
 
-        target = ko.fireList
-          fire_ref: fire_ref.child('fruit')
-          keys_inits:
-            type: null
-            count: 0
+        it 'Should have a _key that is the list key', ->
+          expect firebase_data[target()[0]._key]
+            .toBeDefined()
+
+          expect firebase_data[target()[1]._key]
+            .toBeDefined()
+
+        it 'Should have a _ref that is the firebase ref', ->
+          expect target()[0]._ref
+            .toBeDefined()
+
+          expect target()[1]._ref
+            .toBeDefined()
         
       describe 'Reading from firebase', ->
         beforeEach ->
-
+          target = ko.fireList
+            fire_ref: fire_ref.child('fruit')
+            keys_inits:
+              type: null
+              count: 0
 
         it 'Should be able to switch references', ->
           fire_ref.child('fruit2').push 
@@ -161,6 +181,11 @@ define (require) ->
 
       describe 'Writing to firebase', ->
         beforeEach ->
+          target = ko.fireList
+            fire_ref: fire_ref.child('fruit')
+            keys_inits:
+              type: null
+              count: 0
 
         it 'Should write value to firebase and ko', ->
           target()[1].count 2
