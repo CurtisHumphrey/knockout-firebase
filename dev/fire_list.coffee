@@ -62,8 +62,7 @@ define (require) ->
     Fire_Add_Make: (snapshot) ->
       model_obj = {}
       model_obj._key = snapshot.key()
-
-      fire_ref = snapshot.ref()
+      model_obj._ref = snapshot.ref()
 
       for key, init of @keys_inits
         val = snapshot.child(key).val()
@@ -74,7 +73,7 @@ define (require) ->
           read: real_ko
           write: (value) ->
             value = null if value is undefined
-            fire_ref.child(key).set value, @Fire_Write_Callback
+            model_obj._ref.child(key).set value, @Fire_Write_Callback
             return value
         item.write_locally = real_ko
 
@@ -152,7 +151,7 @@ define (require) ->
       list = @peek()
       for i in [index..index+count-1]
         if list[i]
-          @_class.fire_ref.child(list[i]._key).remove()
+          list[i]._ref.remove()
       return
 
     Ko_Pop: () ->

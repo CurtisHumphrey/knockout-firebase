@@ -66,10 +66,10 @@
       };
 
       Fire_List.prototype.Fire_Add_Make = function(snapshot) {
-        var fire_ref, init, item, key, model_obj, real_ko, val, _ref;
+        var init, item, key, model_obj, real_ko, val, _ref;
         model_obj = {};
         model_obj._key = snapshot.key();
-        fire_ref = snapshot.ref();
+        model_obj._ref = snapshot.ref();
         _ref = this.keys_inits;
         for (key in _ref) {
           init = _ref[key];
@@ -81,7 +81,7 @@
               if (value === void 0) {
                 value = null;
               }
-              fire_ref.child(key).set(value, this.Fire_Write_Callback);
+              model_obj._ref.child(key).set(value, this.Fire_Write_Callback);
               return value;
             }
           });
@@ -182,7 +182,7 @@
         list = this.peek();
         for (i = _i = index, _ref = index + count - 1; index <= _ref ? _i <= _ref : _i >= _ref; i = index <= _ref ? ++_i : --_i) {
           if (list[i]) {
-            this._class.fire_ref.child(list[i]._key).remove();
+            list[i]._ref.remove();
           }
         }
       };

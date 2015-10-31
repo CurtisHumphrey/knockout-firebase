@@ -253,6 +253,11 @@ my_value.Change_Fire_Ref new Firebase('path')
 7. dispose() works and will remove any firebase listners
 8. unlike fireValue and fireModel there is not any options for read_only or read_once
 
+## Special Keys
+These keys are always present even if keys_inits is empty
+1. _key - which is the key name of the list object
+2. _ref - which is the firebase reference of the list object
+
 ## Additional APIs
 1. push, remove, splice, and shift all work
 2. unshift, reverse, sort, removeAll, destroy, destroyAll do NOT work

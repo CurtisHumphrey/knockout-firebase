@@ -6,7 +6,7 @@
     _ = require('lodash');
     window.ko = ko;
     MockFirebase = require('mockfirebase').MockFirebase;
-    return describe('Fire List', function() {
+    return fdescribe('Fire List', function() {
       beforeEach(function() {});
       describe('Exports', function() {
         it('Should add a knockout extender "fireList" function', function() {
@@ -64,20 +64,41 @@
             type: 'apples',
             count: 3
           });
-          last_ref = fire_ref.child('fruit').push({
+          return last_ref = fire_ref.child('fruit').push({
             type: 'oranges',
             count: 4
           });
-          return target = ko.fireList({
-            fire_ref: fire_ref.child('fruit'),
-            keys_inits: {
-              type: null,
-              count: 0
-            }
+        });
+        describe('Special keys', function() {
+          var firebase_data;
+          firebase_data = null;
+          beforeEach(function() {
+            fire_ref.child('fruit').once("value", function(dataSnapshot) {
+              return firebase_data = dataSnapshot.val();
+            });
+            return target = ko.fireList({
+              fire_ref: fire_ref.child('fruit')
+            });
+          });
+          it('Should have a _key that is the list key', function() {
+            expect(firebase_data[target()[0]._key]).toBeDefined();
+            return expect(firebase_data[target()[1]._key]).toBeDefined();
+          });
+          return it('Should have a _ref that is the firebase ref', function() {
+            expect(target()[0]._ref).toBeDefined();
+            return expect(target()[1]._ref).toBeDefined();
           });
         });
         describe('Reading from firebase', function() {
-          beforeEach(function() {});
+          beforeEach(function() {
+            return target = ko.fireList({
+              fire_ref: fire_ref.child('fruit'),
+              keys_inits: {
+                type: null,
+                count: 0
+              }
+            });
+          });
           it('Should be able to switch references', function() {
             fire_ref.child('fruit2').push({
               type: 'grapes',
@@ -144,7 +165,15 @@
           });
         });
         describe('Writing to firebase', function() {
-          beforeEach(function() {});
+          beforeEach(function() {
+            return target = ko.fireList({
+              fire_ref: fire_ref.child('fruit'),
+              keys_inits: {
+                type: null,
+                count: 0
+              }
+            });
+          });
           it('Should write value to firebase and ko', function() {
             target()[1].count(2);
             expect(last_ref.child('count').getData()).toEqual(2);
