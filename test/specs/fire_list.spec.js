@@ -6,7 +6,7 @@
     _ = require('lodash');
     window.ko = ko;
     MockFirebase = require('mockfirebase').MockFirebase;
-    return fdescribe('Fire List', function() {
+    return describe('Fire List', function() {
       beforeEach(function() {});
       describe('Exports', function() {
         it('Should add a knockout extender "fireList" function', function() {

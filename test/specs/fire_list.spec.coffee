@@ -7,7 +7,7 @@ define (require) ->
   MockFirebase = require('mockfirebase').MockFirebase
 
 
-  fdescribe 'Fire List', ->
+  describe 'Fire List', ->
 
     beforeEach ->
 
