@@ -5,7 +5,7 @@ define (require) ->
     constructor: (target, options) ->
       @fire_ref = options.fire_ref
       @keys_inits = options.keys_inits
-      @read_only = false #stops sets
+      @read_only = options.read_only ? false
       @target = target
 
       @target._class = @
@@ -72,9 +72,14 @@ define (require) ->
         item = ko.pureComputed
           read: real_ko
           write: (value) ->
-            value = null if value is undefined
-            model_obj._ref.child(key).set value, @Fire_Write_Callback
-            return value
+            console.log "read_only:"+@read_only
+            if @read_only
+              return real_ko()
+            else
+              value = null if value is undefined
+              model_obj._ref.child(key).set value, @Fire_Write_Callback
+              return value
+          owner: @
         item.write_locally = real_ko
 
         model_obj[key] = item

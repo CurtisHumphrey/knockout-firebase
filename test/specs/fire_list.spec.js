@@ -164,6 +164,23 @@
             return expect(target().length).toEqual(1);
           });
         });
+        describe('Only Reading but always syncing', function() {
+          beforeEach(function() {
+            return target = ko.fireList({
+              read_only: true,
+              fire_ref: fire_ref.child('fruit'),
+              keys_inits: {
+                type: null,
+                count: 0
+              }
+            });
+          });
+          return it('Should NOT save value to firebase and ko', function() {
+            target()[1].count(2);
+            expect(last_ref.child('count').getData()).not.toEqual(2);
+            return expect(target()[1].count()).not.toEqual(2);
+          });
+        });
         describe('Writing to firebase', function() {
           beforeEach(function() {
             return target = ko.fireList({

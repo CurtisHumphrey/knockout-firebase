@@ -217,6 +217,7 @@ require 'knockout-firebase'
 
 list = ko.fireList
   fire_ref: new Firebase('path')
+  read_only: true
   keys_inits:
     type: 'apple'
     count: 2
@@ -232,6 +233,7 @@ require('knockout-firebase');
 
 list = ko.fireList({
   fire_ref: new Firebase('path'),
+  read_only: true,
   keys_inits: {
     type: 'apple',
     count: 2
@@ -251,7 +253,8 @@ my_value.Change_Fire_Ref new Firebase('path')
 5. internally the data is fetch with a once('value') and then kept in sync by other listners.
 6. internally the objects are NOT fireModels nor fireValues
 7. dispose() works and will remove any firebase listners
-8. unlike fireValue and fireModel there is not any options for read_only or read_once
+8. unlike fireValue and fireModel there is not any options for read_once
+9. The option read_only, which defaults to false, applies to the keys of each object not push and other list operations
 
 ## Special Keys
 These keys are always present even if keys_inits is empty

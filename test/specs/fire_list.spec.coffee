@@ -179,6 +179,24 @@ define (require) ->
           # fire_ref.child('fruit').once 'value', (snapshot) -> console.log snapshot.val()
           expect(target().length).toEqual 1
 
+
+      describe 'Only Reading but always syncing', ->
+        beforeEach ->
+          target = ko.fireList
+            read_only: true
+            fire_ref: fire_ref.child('fruit')
+            keys_inits:
+              type: null
+              count: 0
+
+        it 'Should NOT save value to firebase and ko', ->
+          target()[1].count 2
+
+          # fire_ref.child('fruit').once 'value', (snapshot) -> console.log snapshot.val()
+          expect(last_ref.child('count').getData()).not.toEqual 2
+          # console.log ko.toJSON target
+          expect(target()[1].count()).not.toEqual 2
+
       describe 'Writing to firebase', ->
         beforeEach ->
           target = ko.fireList

@@ -93,7 +93,7 @@ module.exports = (grunt) ->
         files: ['bower.json', 'package.json']
         commitFiles: ['bower.json', 'package.json']
         push: false
-        commit: false
+        commit: true
 
   require('time-grunt')(grunt)
 

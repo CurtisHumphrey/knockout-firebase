@@ -8,10 +8,10 @@
       function Fire_List(target, options) {
         this.Fire_Write_Callback = __bind(this.Fire_Write_Callback, this);
         this.Fire_Change_Ref = __bind(this.Fire_Change_Ref, this);
-        var method, _i, _len, _ref;
+        var method, _i, _len, _ref, _ref1;
         this.fire_ref = options.fire_ref;
         this.keys_inits = options.keys_inits;
-        this.read_only = false;
+        this.read_only = (_ref = options.read_only) != null ? _ref : false;
         this.target = target;
         this.target._class = this;
         this._fire_subs = [];
@@ -24,9 +24,9 @@
         this.target.splice = this.Ko_Splice;
         this.target.pop = this.Ko_Pop;
         this.target.shift = this.Ko_Shift;
-        _ref = ['unshift', 'reverse', 'sort', 'removeAll', 'destroy', 'destroyAll'];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          method = _ref[_i];
+        _ref1 = ['unshift', 'reverse', 'sort', 'removeAll', 'destroy', 'destroyAll'];
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          method = _ref1[_i];
           this.target[method] = this.Ko_No_Supported;
         }
         this.Fire_Change_Ref(this.fire_ref);
@@ -78,12 +78,18 @@
           item = ko.pureComputed({
             read: real_ko,
             write: function(value) {
-              if (value === void 0) {
-                value = null;
+              console.log("read_only:" + this.read_only);
+              if (this.read_only) {
+                return real_ko();
+              } else {
+                if (value === void 0) {
+                  value = null;
+                }
+                model_obj._ref.child(key).set(value, this.Fire_Write_Callback);
+                return value;
               }
-              model_obj._ref.child(key).set(value, this.Fire_Write_Callback);
-              return value;
-            }
+            },
+            owner: this
           });
           item.write_locally = real_ko;
           model_obj[key] = item;
